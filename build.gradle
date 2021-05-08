@@ -1,0 +1,62 @@
+plugins {
+    id 'org.springframework.boot' version '2.4.5'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'war'
+}
+
+group = 'io.github.imsejin'
+version = '0.1.0'
+sourceCompatibility = 1.8
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    /*
+    Spring Framework Boot
+     */
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
+    implementation group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '2.1.4'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
+    // Supports monitoring and management for application using HTTP.
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
+    // Supports connection with SSH. --- deprecated
+//    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-remote-shell'
+
+    developmentOnly group: 'org.springframework.boot', name: 'spring-boot-devtools'
+    annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
+    providedRuntime group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat'
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    testImplementation group: 'org.springframework.security', name: 'spring-security-test'
+
+    /*
+    Bytecode manipulation, dynamic type generator
+     */
+    implementation group: 'org.reflections', name: 'reflections', version: '0.9.12'
+    implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.11.0'
+
+    /*
+    H2 in-memory database
+     */
+    compileOnly group: 'com.h2database', name: 'h2'
+    // runtimeOnly group: 'com.h2database', name: 'h2'
+
+    /*
+    Lombok
+     */
+    compileOnly group: 'org.projectlombok', name: 'lombok'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok'
+}
+
+test {
+    useJUnitPlatform()
+}
