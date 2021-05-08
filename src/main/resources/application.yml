@@ -1,0 +1,55 @@
+spring:
+  datasource:
+    continue-on-error: false
+    platform: ${spring.profiles.active} # schema-local.sql, data-local.sql
+    schema: classpath:databases/schema.sql
+    data:
+      - classpath:databases/data-author.sql
+      - classpath:databases/data-country.sql
+      - classpath:databases/data-publisher.sql
+    hikari:
+      driver-class-name: org.h2.Driver
+
+      # Embedded mode: application process(JVM)과 같은 process에서 구동한다.
+      jdbc-url: jdbc:h2:mem:~/template_db;DB_CLOSE_DELAY=-1
+
+      # Server mode: application process(JVM)과 다른 process(JVM)에서 구동한다.
+      # https://iamohsung.tistory.com/7
+      # jdbc-url: jdbc:h2:tcp://localhost:9092/mem:template_db;DB_CLOSE_DELAY=-1
+
+      # 파일로 h2 database를 관리할 수 있다.
+      # 설정된 경로에 'template_db'라는 이름의 database를 생성한다.
+      # autoServer는 다중 접속을 허용한다. (인메모리에서는 미 사용)
+      # jdbc-url: jdbc:h2:file:~/databases/h2/template_db;AUTO_SERVER=TRUE
+
+      username: sa
+      password: ""
+      connection-test-query: SELECT 1
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  profiles:
+    active: local
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+    jmx:
+      exposure:
+        include: "*"
+
+server:
+  port: 8000
+  servlet:
+    encoding:
+      charset: UTF-8
+
+logging:
+  charset:
+    console: UTF-8
