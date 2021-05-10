@@ -1,35 +1,33 @@
 package io.github.imsejin.template.webapp.core.database.mybatis.interceptor;
 
+import io.github.imsejin.template.webapp.core.database.mybatis.dialect.Dialect;
 import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Page;
 import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Pageable;
 import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Paginator;
 import io.github.imsejin.template.webapp.core.database.mybatis.support.InterceptorUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.jsqlparser.expression.Function;
-import net.sf.jsqlparser.statement.select.OrderByElement;
-import net.sf.jsqlparser.statement.select.PlainSelect;
-import net.sf.jsqlparser.statement.select.SelectExpressionItem;
-import net.sf.jsqlparser.statement.select.SelectItem;
 import org.apache.ibatis.builder.StaticSqlSource;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.resultset.ResultSetHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
-import org.apache.ibatis.mapping.*;
+import org.apache.ibatis.mapping.BoundSql;
+import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.ResultMap;
+import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Signature;
-import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
-import java.util.*;
-
-import static java.util.stream.Collectors.toList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * <p> type
@@ -60,11 +58,14 @@ import static java.util.stream.Collectors.toList;
         })
 })
 @Slf4j
+@RequiredArgsConstructor
 public class PaginatorInterceptor implements Interceptor {
 
     private static final int MAPPED_STATEMENT_INDEX = 0;
     private static final int PARAMETER_INDEX = 1;
     private static final int ROW_BOUNDS_INDEX = 2;
+
+    private final Dialect dialect;
 
     private Properties properties;
 
@@ -92,119 +93,23 @@ public class PaginatorInterceptor implements Interceptor {
         log.info("=================== boundSql: {}", boundSql.getSql());
 
         // Manipulates query.
-        BoundSql countBoundSql = createCountBoundSql(boundSql, ms.getConfiguration());
+        BoundSql countBoundSql = this.dialect.createCountBoundSql(boundSql, ms.getConfiguration());;
         log.info("countBoundSql: {}", countBoundSql.getSql());
 
         StaticSqlSource sqlSource = new StaticSqlSource(ms.getConfiguration(), countBoundSql.getSql(), countBoundSql.getParameterMappings());
         MappedStatement countMs = createCountMappedStatement(ms, sqlSource);
-        countBoundSql.getParameterMappings().forEach(System.out::println);
 
         // Executes total count query.
         invocation.getArgs()[0] = countMs;
         long totalItems = ((List<Long>) invocation.proceed()).get(0);
-        log.info("=== totalItems: {}", totalItems);
 
+        // Executes items query.
         invocation.getArgs()[0] = ms;
         Object resultSet = invocation.proceed();
-        log.info("=== resultSet: {}", resultSet);
 
         List<?> items = (List<?>) resultSet;
         Pageable pageable = InterceptorUtils.getPageableFromParam(param);
         return new Paginator<>(items, new Page((int) totalItems, pageable));
-    }
-
-    private static BoundSql createCountBoundSql(BoundSql boundSql, Configuration config) {
-        PlainSelect select = InterceptorUtils.newSelect(boundSql.getSql());
-        List<ParameterMapping> mappings = getFilteredParameterMappings(boundSql, select);
-        newCountSelect(boundSql, select);
-        return new BoundSql(config, select.toString(), mappings, boundSql.getParameterObject());
-    }
-
-    private static List<ParameterMapping> getFilteredParameterMappings(BoundSql boundSql, PlainSelect select) {
-        ParameterMapping[] mappings = boundSql.getParameterMappings().toArray(new ParameterMapping[0]);
-
-        // Removes parameter mappings in select statement.
-        int selelctOccurrences = 0;
-        for (SelectItem selectItem : select.getSelectItems()) {
-            selelctOccurrences += StringUtils.countOccurrencesOf(selectItem.toString(), "?");
-        }
-        for (int i = 0; i < selelctOccurrences; i++) {
-            mappings[i] = null;
-        }
-
-        int otherOccurrences = 0;
-
-        // Removes parameter mappings in offset statement.
-        if (select.getOffset() != null) {
-            int lastIndex = (mappings.length - 1) - otherOccurrences;
-            int occurrences = StringUtils.countOccurrencesOf(select.getLimit().toString(), "?");
-            otherOccurrences += occurrences;
-
-            for (int i = lastIndex; i > lastIndex - occurrences && i >= selelctOccurrences; i--) {
-                mappings[i] = null;
-            }
-        }
-
-        // Removes parameter mappings in limit statement.
-        if (select.getLimit() != null) {
-            int lastIndex = (mappings.length - 1) - otherOccurrences;
-            int occurrences = StringUtils.countOccurrencesOf(select.getLimit().toString(), "?");
-            otherOccurrences += occurrences;
-
-            for (int i = lastIndex; i > lastIndex - occurrences && i >= selelctOccurrences; i--) {
-                mappings[i] = null;
-            }
-        }
-
-        // Removes parameter mappings in order-by statement.
-        if (!CollectionUtils.isEmpty(select.getOrderByElements())) {
-            int lastIndex = (mappings.length - 1) - otherOccurrences;
-            int occurrences = 0;
-            for (OrderByElement orderByElement : select.getOrderByElements()) {
-                occurrences += StringUtils.countOccurrencesOf(orderByElement.toString(), "?");
-            }
-
-            for (int i = lastIndex; i > lastIndex - occurrences && i >= selelctOccurrences; i--) {
-                mappings[i] = null;
-            }
-        }
-
-        return Arrays.stream(mappings).filter(Objects::nonNull).collect(toList());
-    }
-
-    private static PlainSelect newCountSelect(BoundSql boundSql, PlainSelect select) {
-//        List<ParameterMapping> mappings = getFilteredParameterMappings(boundSql, select);
-
-        // log.info("mappings: {}", mappings);
-        // log.info("=================== boundSql.getParameterMappings({}): {}", boundSql.getParameterMappings().size(),
-        //         boundSql.getParameterMappings().stream().map(ParameterMapping::getProperty).collect(toList()));
-
-//        boundSql.getParameterMappings().clear();
-//        boundSql.getParameterMappings().addAll(mappings);
-
-        // log.info("=================== boundSql.getParameterMappings({}): {}", boundSql.getParameterMappings().size(),
-        //         boundSql.getParameterMappings().stream().map(ParameterMapping::getProperty).collect(toList()));
-
-        /*
-        Converts to count query.
-         */
-        log.info("========== before select: {}", select);
-
-        // Add 'COUNT(*)' as select item into root select.
-        Function countFunc = new Function();
-        countFunc.setName("COUNT");
-        countFunc.setAllColumns(true);
-        List<SelectItem> selectItems = Collections.singletonList(new SelectExpressionItem(countFunc));
-        select.setSelectItems(selectItems);
-
-        // Removes statements 'ORDER BY', 'LIMIT', 'OFFSET'.
-        select.setOrderByElements(null);
-        select.setLimit(null);
-        select.setOffset(null);
-
-        log.info("========== after select: {}", select);
-
-        return select;
     }
 
     private static List<ResultMap> createCountResultMaps(MappedStatement ms) {

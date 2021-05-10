@@ -3,6 +3,7 @@ package io.github.imsejin.template.webapp.core.database;
 import com.zaxxer.hikari.HikariDataSource;
 import io.github.imsejin.template.webapp.Application;
 import io.github.imsejin.template.webapp.core.database.mybatis.config.DynamicCodeEnumTypeHandlerAutoConfig;
+import io.github.imsejin.template.webapp.core.database.mybatis.dialect.MySQLDialect;
 import io.github.imsejin.template.webapp.core.database.mybatis.interceptor.PaginatorInterceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
-import java.util.Properties;
 
 /**
  * Cannot refer to both {@link SqlSessionTemplate} and {@link SqlSessionFactory} together.
@@ -66,10 +66,8 @@ public class DatabaseConfig {
         factoryBean.setDataSource(dataSource);
         factoryBean.setConfiguration(configuration);
         factoryBean.setTypeHandlers(codeEnumTypeHandlers.get().toArray(new TypeHandler[0]));
-        Interceptor interceptor = new PaginatorInterceptor();
-        Properties properties = new Properties();
-        properties.put("foo", "bar");
-        interceptor.setProperties(properties);
+
+        Interceptor interceptor = new PaginatorInterceptor(new MySQLDialect());
         factoryBean.setPlugins(interceptor);
 
         log.info("SqlSessionFactoryBean registered {} type handler(s) for implementation of CodeEnum",
