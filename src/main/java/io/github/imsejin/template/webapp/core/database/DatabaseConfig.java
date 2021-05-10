@@ -59,6 +59,9 @@ public class DatabaseConfig {
         factoryBean.setConfiguration(configuration);
         factoryBean.setTypeHandlers(codeEnumTypeHandlers.get().toArray(new TypeHandler[0]));
 
+        log.info("SqlSessionFactoryBean registered {} type handler(s) for implementation of CodeEnum",
+                codeEnumTypeHandlers.get().size());
+
         return factoryBean.getObject();
     }
 
