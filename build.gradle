@@ -50,6 +50,8 @@ dependencies {
     compileOnly group: 'com.h2database', name: 'h2'
     // runtimeOnly group: 'com.h2database', name: 'h2'
 
+    implementation group: 'com.github.jsqlparser', name: 'jsqlparser', version: '4.0'
+
     /*
     Lombok
      */
