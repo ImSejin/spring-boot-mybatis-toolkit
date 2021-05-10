@@ -1,6 +1,7 @@
 package io.github.imsejin.template.webapp.core.database.mybatis.interceptor;
 
 import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Page;
+import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Pageable;
 import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Paginator;
 import io.github.imsejin.template.webapp.core.database.mybatis.support.InterceptorUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -108,8 +109,8 @@ public class PaginatorInterceptor implements Interceptor {
         log.info("=== resultSet: {}", resultSet);
 
         List<?> items = (List<?>) resultSet;
-        Page page = InterceptorUtils.getPageFromParam(param);
-        return new Paginator<>(items, new Page((int) totalItems, page.getNumber(), page.getSize()));
+        Pageable pageable = InterceptorUtils.getPageableFromParam(param);
+        return new Paginator<>(items, new Page((int) totalItems, pageable));
     }
 
     private static BoundSql createCountBoundSql(BoundSql boundSql, Configuration config) {
@@ -195,7 +196,6 @@ public class PaginatorInterceptor implements Interceptor {
         countFunc.setAllColumns(true);
         List<SelectItem> selectItems = Collections.singletonList(new SelectExpressionItem(countFunc));
         select.setSelectItems(selectItems);
-
 
         // Removes statements 'ORDER BY', 'LIMIT', 'OFFSET'.
         select.setOrderByElements(null);

@@ -1,6 +1,8 @@
 package io.github.imsejin.template.webapp.core.database.mybatis.support;
 
 import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Page;
+import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.PageRequest;
+import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Pageable;
 import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Paginator;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
@@ -43,7 +45,7 @@ public final class InterceptorUtils {
         for (Method method : clazz.getDeclaredMethods()) {
             if (!method.getName().equals(methodName)) continue;
             if (method.getReturnType() != Paginator.class) continue;
-            if (Arrays.stream(method.getParameterTypes()).noneMatch(Page.class::isAssignableFrom)) continue;
+            if (Arrays.stream(method.getParameterTypes()).noneMatch(Pageable.class::isAssignableFrom)) continue;
 
             return method;
         }
@@ -52,7 +54,7 @@ public final class InterceptorUtils {
     }
 
     /**
-     * Returns page instance from parameter.
+     * Returns pageable instance from parameter.
      *
      * <p> Element in index 1 of {@link Invocation#getArgs()} is the
      * argument of mapper's method. When parameter length of its method is 1,
@@ -60,21 +62,20 @@ public final class InterceptorUtils {
      * the type of elements is {@link org.apache.ibatis.binding.MapperMethod.ParamMap}.
      *
      * @param param mapper parameter
-     * @return page instance
+     * @return pageable instance
      */
-    public static Page getPageFromParam(Object param) {
-        if (param instanceof Page) {
-            Page page = (Page) param;
+    public static Pageable getPageableFromParam(Object param) {
+        if (param instanceof Pageable) {
+            return (Pageable) param;
 
-            return page;
         } else if (param instanceof MapperMethod.ParamMap) {
             MapperMethod.ParamMap<?> paramMap = (MapperMethod.ParamMap<?>) param;
             for (Object value : paramMap.values()) {
-                if (!Page.class.isAssignableFrom(value.getClass())) continue;
-                return (Page) value;
+                if (!Pageable.class.isAssignableFrom(value.getClass())) continue;
+                return (Pageable) value;
             }
 
-            throw new IllegalArgumentException("Not found parameter: " + Page.class.getName());
+            throw new IllegalArgumentException("Not found parameter: " + Pageable.class.getName());
         } else {
             throw new TypeException("Unsupported parameter type: " + param.getClass());
         }
