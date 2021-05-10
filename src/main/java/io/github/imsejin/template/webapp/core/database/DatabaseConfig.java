@@ -3,8 +3,11 @@ package io.github.imsejin.template.webapp.core.database;
 import com.zaxxer.hikari.HikariDataSource;
 import io.github.imsejin.template.webapp.Application;
 import io.github.imsejin.template.webapp.core.database.mybatis.config.DynamicCodeEnumTypeHandlerAutoConfig;
+import io.github.imsejin.template.webapp.core.database.mybatis.interceptor.PaginatorInterceptor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.TypeHandler;
@@ -18,11 +21,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
  * Cannot refer to both {@link SqlSessionTemplate} and {@link SqlSessionFactory} together.
  * If you do, {@link SqlSessionFactory} is ignored.
  */
+@Slf4j
 @org.springframework.context.annotation.Configuration
 @MapperScan(
         annotationClass = Mapper.class,
@@ -32,6 +37,9 @@ import javax.sql.DataSource;
 @RequiredArgsConstructor
 public class DatabaseConfig {
 
+    /**
+     * IOC Container will create beans in this order like 'Server -> DatabaseConfig'.
+     */
     private final Server server;
 
     private final DynamicCodeEnumTypeHandlerAutoConfig.CodeEnumTypeHandlers codeEnumTypeHandlers;
@@ -58,6 +66,11 @@ public class DatabaseConfig {
         factoryBean.setDataSource(dataSource);
         factoryBean.setConfiguration(configuration);
         factoryBean.setTypeHandlers(codeEnumTypeHandlers.get().toArray(new TypeHandler[0]));
+        Interceptor interceptor = new PaginatorInterceptor();
+        Properties properties = new Properties();
+        properties.put("foo", "bar");
+        interceptor.setProperties(properties);
+        factoryBean.setPlugins(interceptor);
 
         log.info("SqlSessionFactoryBean registered {} type handler(s) for implementation of CodeEnum",
                 codeEnumTypeHandlers.get().size());
