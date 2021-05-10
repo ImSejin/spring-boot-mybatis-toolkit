@@ -11,13 +11,15 @@ import java.util.Map;
 @ToString
 public class PageRequest implements Pageable {
 
+    public static final String QUERY_PROPERTY_NAME = "query";
+
     @JsonProperty("page")
     private int offset;
 
     @JsonProperty("size")
     private int limit;
 
-    @JsonProperty("query")
+    @JsonProperty(QUERY_PROPERTY_NAME)
     private Map<String, Object> query;
 
     @Override
