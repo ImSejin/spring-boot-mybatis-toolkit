@@ -1,22 +1,35 @@
 package io.github.imsejin.template.webapp.author.mapper;
 
 import io.github.imsejin.template.webapp.author.model.Author;
-import io.github.imsejin.template.webapp.core.database.mybatis.mapper.BaseMapper;
+import io.github.imsejin.template.webapp.core.database.mybatis.model.Page;
+import io.github.imsejin.template.webapp.core.database.mybatis.model.Paginator;
 import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.session.RowBounds;
 
 import java.util.List;
 
 @Mapper
-public interface AuthorMapper extends BaseMapper<Author> {
+public interface AuthorMapper {
 
-    @Select("SELECT * " +
-            "FROM AUTHOR")
-    List<Author> selectAll();
-
-    @Select("SELECT * " +
+    @Select("<script>" +
+            "SELECT *, #{number} AS NUMBER " +
             "FROM AUTHOR " +
-            "WHERE ID = #{id}")
-    Author selectById(long id);
+            "<if test='size lt 10'> " +
+            "WHERE ID &lt; #{size} " +
+            "</if> " +
+            "<if test='size gte 10'> " +
+            "WHERE ID >= #{size} " +
+            "</if> " +
+             "LIMIT #{limit} OFFSET #{offset} " +
+            "</script>")
+    Paginator<Author> selectAll(Page page);
+
+    @Select("SELECT *, /* ? asd ? */#{id} AS ID -- asdas ? \n" +
+            "FROM AUTHOR " +
+            "WHERE ID = #{id} " +
+            "OR ID = #{param2.number}")
+    Paginator<Author> selectById(@Param("id") long id, Page page);
+//    Author selectById(@Param("id") long id, int i);
 
     @Select("SELECT * " +
             "FROM AUTHOR " +
