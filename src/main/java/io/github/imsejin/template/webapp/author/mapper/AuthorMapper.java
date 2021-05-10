@@ -1,35 +1,42 @@
 package io.github.imsejin.template.webapp.author.mapper;
 
 import io.github.imsejin.template.webapp.author.model.Author;
-import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Page;
+import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Pageable;
 import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Paginator;
 import org.apache.ibatis.annotations.*;
-import org.apache.ibatis.session.RowBounds;
-
-import java.util.List;
 
 @Mapper
 public interface AuthorMapper {
 
-    @Select("<script>" +
-            "SELECT *, #{number} AS NUMBER " +
+    @Select("<script> " +
+            "SELECT * " +
             "FROM AUTHOR " +
-            "<if test='size lt 10'> " +
-            "WHERE ID &lt; #{size} " +
+            "WHERE 1 " +
+
+            "<if test='query.name != null'> " +
+            "AND NAME LIKE CONCAT('%', #{query.name}, '%') " +
             "</if> " +
-            "<if test='size gte 10'> " +
-            "WHERE ID >= #{size} " +
+
+            "<if test='query.country != null'> " +
+            "AND COUNTRY = #{query.country} " +
             "</if> " +
+
+            "<if test='query.startDate != null'> " +
+            "AND BIRTHDATE &lt; #{query.startDate} " +
+            "</if> " +
+
+            "<if test='query.endDate != null'> " +
+            "AND BIRTHDATE &lt; #{query.endDate} " +
+            "</if> " +
+
              "LIMIT #{limit} OFFSET #{offset} " +
             "</script>")
-    Paginator<Author> selectAll(Page page);
+    Paginator<Author> selectAll(Pageable pageable);
 
-    @Select("SELECT *, /* ? asd ? */#{id} AS ID -- asdas ? \n" +
+    @Select("SELECT * " +
             "FROM AUTHOR " +
-            "WHERE ID = #{id} " +
-            "OR ID = #{param2.number}")
-    Paginator<Author> selectById(@Param("id") long id, Page page);
-//    Author selectById(@Param("id") long id, int i);
+            "WHERE ID = #{id}")
+    Author selectById(long id);
 
     @Select("SELECT * " +
             "FROM AUTHOR " +

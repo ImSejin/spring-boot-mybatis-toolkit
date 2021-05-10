@@ -2,10 +2,9 @@ package io.github.imsejin.template.webapp.author.controller;
 
 import io.github.imsejin.template.webapp.author.model.Author;
 import io.github.imsejin.template.webapp.author.service.AuthorService;
+import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.PageRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("authors")
@@ -15,12 +14,12 @@ public class AuthorController {
     private final AuthorService authorService;
 
     @GetMapping
-    public Object getAuthors() {
-        return authorService.getAuthors();
+    public Object getAuthors(PageRequest request) {
+        return authorService.getAuthors(request);
     }
 
     @GetMapping("id/{id}")
-    public Author getAuthor(@PathVariable long id) {
+    public Object getAuthor(@PathVariable long id) {
         return authorService.getAuthor(id);
     }
 
