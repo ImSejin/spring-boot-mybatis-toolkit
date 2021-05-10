@@ -66,11 +66,11 @@ public class DynamicCodeEnumTypeHandlerAutoConfig {
     @Bean
     @Primary
     public CodeEnumTypeHandlers dynamicCodeEnumTypeHandlers() throws ReflectiveOperationException {
-        // PkqssApplication과 같이 있거나 하위에 있는, CodeEnum의 모든 구현체를 찾는다.
+        // 'Application'과 같이 있거나 하위에 있는, 'CodeEnum'의 모든 구현체를 찾는다.
         Reflections reflections = new Reflections(Application.class.getPackage().getName());
         Set<Class<? extends CodeEnum>> subclasses = reflections.getSubTypesOf(CodeEnum.class);
 
-        // java.lang.Class를 파라미터로 갖는 CodeEnumTypeHandler의 생성자.
+        // 'java.lang.Class'를 파라미터로 갖는 'CodeEnumTypeHandler'의 생성자.
         Class<CodeEnumTypeHandler> superType = CodeEnumTypeHandler.class;
         Constructor<CodeEnumTypeHandler> superConstructor = superType.getConstructor(Class.class);
 
@@ -79,13 +79,13 @@ public class DynamicCodeEnumTypeHandlerAutoConfig {
         List<TypeHandler<?>> typeHandlers = new ArrayList<>();
         for (Class<? extends CodeEnum> type : subclasses) {
             /*
-             * Enum이 아닌 타입이거나, abstract method를 갖고 있는 Enum의 경우
+             * 'Enum'이 아닌 타입이거나, abstract method를 갖고 있는 'Enum'의 경우
              * 각 constant가 anonymous class로 생성된다.
-             * 이런 타입으로 CodeEnumTypeHandler를 생성할 수 없다.
+             * 이런 타입으로 'CodeEnumTypeHandler'를 생성할 수 없다.
              */
             if (!Enum.class.isAssignableFrom(type) || type.isAnonymousClass()) continue;
 
-            // CodeEnumTypeHandler를 상속하는 동적 타입을 생성한다.
+            // 'CodeEnumTypeHandler'를 상속하는 동적 타입을 생성한다.
             Class<? extends CodeEnumTypeHandler> dynamicType = new ByteBuddy().subclass(superType)
                     .defineConstructor(Visibility.PUBLIC).intercept(MethodCall.invoke(superConstructor).with(type))
                     .make().load(classLoader).getLoaded();
