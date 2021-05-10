@@ -1,4 +1,4 @@
-package io.github.imsejin.template.webapp.core.database.mybatis.model;
+package io.github.imsejin.template.webapp.core.database.mybatis.model.pagination;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.github.imsejin.template.webapp.core.jackson.serializer.PaginatorSerializer;

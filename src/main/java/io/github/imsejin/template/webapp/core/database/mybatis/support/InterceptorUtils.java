@@ -1,7 +1,7 @@
 package io.github.imsejin.template.webapp.core.database.mybatis.support;
 
-import io.github.imsejin.template.webapp.core.database.mybatis.model.Page;
-import io.github.imsejin.template.webapp.core.database.mybatis.model.Paginator;
+import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Page;
+import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Paginator;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;

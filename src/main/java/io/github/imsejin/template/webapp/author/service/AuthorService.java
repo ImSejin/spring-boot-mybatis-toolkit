@@ -2,8 +2,7 @@ package io.github.imsejin.template.webapp.author.service;
 
 import io.github.imsejin.template.webapp.author.mapper.AuthorMapper;
 import io.github.imsejin.template.webapp.author.model.Author;
-import io.github.imsejin.template.webapp.core.database.mybatis.model.Page;
-import io.github.imsejin.template.webapp.core.database.mybatis.model.Paginator;
+import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

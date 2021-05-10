@@ -1,8 +1,8 @@
 package io.github.imsejin.template.webapp.author.mapper;
 
 import io.github.imsejin.template.webapp.author.model.Author;
-import io.github.imsejin.template.webapp.core.database.mybatis.model.Page;
-import io.github.imsejin.template.webapp.core.database.mybatis.model.Paginator;
+import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Page;
+import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Paginator;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.session.RowBounds;
 

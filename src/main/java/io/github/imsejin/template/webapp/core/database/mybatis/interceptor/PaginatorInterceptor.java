@@ -1,7 +1,7 @@
 package io.github.imsejin.template.webapp.core.database.mybatis.interceptor;
 
-import io.github.imsejin.template.webapp.core.database.mybatis.model.Page;
-import io.github.imsejin.template.webapp.core.database.mybatis.model.Paginator;
+import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Page;
+import io.github.imsejin.template.webapp.core.database.mybatis.model.pagination.Paginator;
 import io.github.imsejin.template.webapp.core.database.mybatis.support.InterceptorUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Function;

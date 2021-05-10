@@ -1,4 +1,4 @@
-package io.github.imsejin.template.webapp.core.database.mybatis.model;
+package io.github.imsejin.template.webapp.core.database.mybatis.model.pagination;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @EqualsAndHashCode(callSuper = false)
-public class Page {
+public class Page implements Pageable {
 
     /**
      * Minimum value is 0.
@@ -32,10 +32,10 @@ public class Page {
     private final int totalPages;
 
     @JsonIgnore
-    private final int limit;
+    private final int offset;
 
     @JsonIgnore
-    private final int offset;
+    private final int limit;
 
     public Page(int totalItems, int number, int size) {
         if (number < 1) throw new IllegalArgumentException("Page.number must be positive: " + number);
@@ -52,6 +52,10 @@ public class Page {
 
         this.offset = Math.max(0, number - 1) * size;
         this.limit = size;
+    }
+
+    public Page(int totalItems, Pageable pageable) {
+        this(totalItems, Math.max(0, pageable.getOffset() / pageable.getLimit()) + 1, pageable.getLimit());
     }
 
     @Override
