@@ -1,8 +1,8 @@
 dependencies {
-    api group: 'com.github.jsqlparser', name: 'jsqlparser', version: '4.0'
-    implementation group: 'org.mybatis', name: 'mybatis', version: "$versions.mybatis"
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$versions.jackson"
+    api(group: "com.github.jsqlparser", name: "jsqlparser", version: "4.0")
+    implementation(group: "org.mybatis", name: "mybatis", version: "$versions.mybatis")
+    implementation(group: "com.fasterxml.jackson.core", name: "jackson-databind", version: "$versions.jackson")
 
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: "$versions.lombok"
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: "$versions.lombok"
+    compileOnly(group: "org.projectlombok", name: "lombok", version: "$versions.lombok")
+    annotationProcessor(group: "org.projectlombok", name: "lombok", version: "$versions.lombok")
 }

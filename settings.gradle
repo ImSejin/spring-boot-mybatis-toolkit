@@ -1,4 +1,6 @@
-rootProject.name = 'spring-boot-mybatis-toolkit'
-include ':mybatis-type-handler'
-include ':mybatis-pagination'
-include ':example'
+rootProject.name = "spring-boot-mybatis-toolkit"
+include(
+        ":mybatis-type-handler",
+        ":mybatis-pagination",
+        ":example",
+)

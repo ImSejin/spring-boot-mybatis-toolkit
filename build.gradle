@@ -1,45 +1,51 @@
+import java.nio.charset.StandardCharsets
+
 buildscript {
     ext {
         versions = [
-                lombok     : '1.18.20',
-                reflections: '0.9.12',
-                bytebuddy  : '1.11.0',
-                jackson    : '2.12.3',
-                mybatis    : '3.5.7',
-                junit5     : '5.7.1',
+                lombok     : "1.18.20",
+                reflections: "0.9.12",
+                bytebuddy  : "1.11.0",
+                jackson    : "2.12.3",
+                mybatis    : "3.5.7",
+                junit5     : "5.7.1",
         ]
     }
 
     repositories {
+        google()
         mavenCentral()
     }
 }
 
 plugins {
-    id 'java'
-    id 'java-library' // For using "api"; https://jongmin92.github.io/2019/05/09/Gradle/gradle-api-vs-implementation
+    id("java")
+    id("java-library") // For using "api"; https://jongmin92.github.io/2019/05/09/Gradle/gradle-api-vs-implementation
 }
 
 configurations {
     compileOnly {
-        extendsFrom annotationProcessor
+        extendsFrom(annotationProcessor)
     }
 }
 
 allprojects {
-    group 'io.github.imsejin'
-    version '0.1.0'
+    group = "io.github.imsejin"
+    version = "0.1.0"
 }
 
 subprojects {
-    apply plugin: 'java'
-    apply plugin: 'java-library'
+    apply(plugin: "java")
+    apply(plugin: "java-library")
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    // Prevents error from occurring "unmappable character for encoding MS949".
+    [compileJava, compileTestJava]*.options*.encoding = StandardCharsets.UTF_8
 
     repositories {
+        google()
         mavenCentral()
     }
 
@@ -63,10 +69,10 @@ jar {
 }
 
 task deleteGraphicsAssets(type: Delete) {
-    delete file('src').listFiles()
+    delete file("src").listFiles()
 }
 
 gradle.buildFinished {
-    println('Finished build')
+    println("Finished build")
     // project.buildDir.deleteDir()
 }

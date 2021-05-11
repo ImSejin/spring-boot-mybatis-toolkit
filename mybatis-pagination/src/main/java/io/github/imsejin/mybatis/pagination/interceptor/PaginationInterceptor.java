@@ -92,7 +92,8 @@ public class PaginationInterceptor implements Interceptor {
         BoundSql countBoundSql = this.dialect.createCountBoundSql(boundSql, ms.getConfiguration());;
 //        log.info("countBoundSql: {}", countBoundSql.getSql());
 
-        StaticSqlSource sqlSource = new StaticSqlSource(ms.getConfiguration(), countBoundSql.getSql(), countBoundSql.getParameterMappings());
+        StaticSqlSource sqlSource = new StaticSqlSource(ms.getConfiguration(), countBoundSql.getSql(),
+                countBoundSql.getParameterMappings());
         MappedStatement countMs = createCountMappedStatement(ms, sqlSource);
 
         // Executes total count query.
