@@ -1,2 +1,2 @@
-# spring-boot-mybatis-template
-Template project using Spring Boot and MyBatis
+# Spring Boot MyBatis Toolkit
+Toolkit for MyBatis with Spring Boot integration.
