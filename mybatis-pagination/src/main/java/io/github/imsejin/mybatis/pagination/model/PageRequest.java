@@ -1,0 +1,39 @@
+package io.github.imsejin.mybatis.pagination.model;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@Setter
+@ToString
+public class PageRequest implements Pageable {
+
+    public static final String QUERY_PROPERTY_NAME = "query";
+
+    @JsonProperty("page")
+    private int offset;
+
+    @JsonProperty("size")
+    private int limit;
+
+    @JsonProperty(QUERY_PROPERTY_NAME)
+    private Map<String, Object> query;
+
+    @Override
+    public int getOffset() {
+        return Math.max(0, this.offset - 1) * this.limit;
+    }
+
+    @Override
+    public int getLimit() {
+        return this.limit;
+    }
+
+    public Map<String, Object> getQuery() {
+        return query == null ? new HashMap<>() : query;
+    }
+
+}

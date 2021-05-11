@@ -1,0 +1,9 @@
+dependencies {
+    implementation group: 'org.mybatis', name: 'mybatis', version: "$versions.mybatis"
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$versions.jackson"
+
+    // Finder for types matched a specific condition.
+    api group: 'org.reflections', name: 'reflections', version: "$versions.reflections"
+    // Bytecode manipulator, dynamic type generator.
+    implementation group: 'net.bytebuddy', name: 'byte-buddy', version: "$versions.bytebuddy"
+}

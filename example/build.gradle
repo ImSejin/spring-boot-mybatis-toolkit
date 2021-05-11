@@ -1,0 +1,29 @@
+plugins {
+    id 'org.springframework.boot' version '2.4.5'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+}
+
+dependencies {
+    /*
+    Spring Framework Boot
+     */
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
+    implementation group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '2.1.4'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
+
+    developmentOnly group: 'org.springframework.boot', name: 'spring-boot-devtools'
+    annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+
+    implementation project(':mybatis-type-handler')
+    implementation project(':mybatis-pagination')
+
+    /*
+    H2 in-memory database
+     */
+    runtimeOnly group: 'com.h2database', name: 'h2'
+
+    compileOnly group: 'org.projectlombok', name: 'lombok'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok'
+}

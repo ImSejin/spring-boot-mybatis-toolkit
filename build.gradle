@@ -1,13 +1,24 @@
-plugins {
-    id 'org.springframework.boot' version '2.4.5'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'java'
-    id 'war'
+buildscript {
+    ext {
+        versions = [
+                lombok     : '1.18.20',
+                reflections: '0.9.12',
+                bytebuddy  : '1.11.0',
+                jackson    : '2.12.3',
+                mybatis    : '3.5.7',
+                junit5     : '5.7.1',
+        ]
+    }
+
+    repositories {
+        mavenCentral()
+    }
 }
 
-group = 'io.github.imsejin'
-version = '0.1.0'
-sourceCompatibility = 1.8
+plugins {
+    id 'java'
+    id 'java-library' // For using "api"; https://jongmin92.github.io/2019/05/09/Gradle/gradle-api-vs-implementation
+}
 
 configurations {
     compileOnly {
@@ -15,50 +26,42 @@ configurations {
     }
 }
 
-repositories {
-    mavenCentral()
+allprojects {
+    group 'io.github.imsejin'
+    version '0.1.0'
 }
 
-dependencies {
-    /*
-    Spring Framework Boot
-     */
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
-    implementation group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '2.1.4'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
-    // Supports monitoring and management for application using HTTP.
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
-    // Supports connection with SSH. --- deprecated
-//    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-remote-shell'
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'java-library'
 
-    developmentOnly group: 'org.springframework.boot', name: 'spring-boot-devtools'
-    annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
-    providedRuntime group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat'
-    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-    testImplementation group: 'org.springframework.security', name: 'spring-security-test'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-    /*
-    Bytecode manipulation, dynamic type generator
-     */
-    implementation group: 'org.reflections', name: 'reflections', version: '0.9.12'
-    implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.11.0'
+    repositories {
+        mavenCentral()
+    }
 
-    /*
-    H2 in-memory database
-     */
-    compileOnly group: 'com.h2database', name: 'h2'
-    // runtimeOnly group: 'com.h2database', name: 'h2'
+    dependencies {
+        testImplementation "org.junit.jupiter:junit-jupiter-api:$versions.junit5"
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$versions.junit5"
+    }
 
-    implementation group: 'com.github.jsqlparser', name: 'jsqlparser', version: '4.0'
-
-    /*
-    Lombok
-     */
-    compileOnly group: 'org.projectlombok', name: 'lombok'
-    annotationProcessor group: 'org.projectlombok', name: 'lombok'
+    test {
+        useJUnitPlatform()
+    }
 }
 
-test {
-    useJUnitPlatform()
+jar {
+    enabled = true
+}
+
+task deleteGraphicsAssets(type: Delete) {
+    delete file('src').listFiles()
+}
+
+gradle.buildFinished {
+    println('Finished build')
+    // project.buildDir.deleteDir()
 }
