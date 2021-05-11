@@ -53,6 +53,11 @@ subprojects {
     }
 }
 
+wrapper {
+    gradleVersion = "7.0.1"
+    distributionType = Wrapper.DistributionType.BIN
+}
+
 jar {
     enabled = true
 }
