@@ -4,3 +4,8 @@ include(
         ":mybatis-pagination",
         ":example",
 )
+
+rootProject.children.forEach {it ->
+    it.projectDir = file("subprojects/$it.name")
+    it.buildFileName = "$it.name-build.gradle"
+}
