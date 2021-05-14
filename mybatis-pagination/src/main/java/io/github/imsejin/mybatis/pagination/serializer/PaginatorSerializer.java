@@ -24,7 +24,7 @@ public class PaginatorSerializer extends StdSerializer<Paginator<?>> {
     public void serialize(Paginator<?> paginator, JsonGenerator gen, SerializerProvider provider)
             throws IOException {
         gen.writeStartObject();
-        gen.writeObjectField("page", paginator.getPage());
+        gen.writeObjectField("pageInfo", paginator.getPageInfo());
         gen.writeObjectField("items", paginator.getItems());
         gen.writeEndObject();
     }

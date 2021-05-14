@@ -1,7 +1,7 @@
 package io.github.imsejin.mybatis.pagination.interceptor;
 
 import io.github.imsejin.mybatis.pagination.dialect.Dialect;
-import io.github.imsejin.mybatis.pagination.model.Page;
+import io.github.imsejin.mybatis.pagination.model.PageInfo;
 import io.github.imsejin.mybatis.pagination.model.Pageable;
 import io.github.imsejin.mybatis.pagination.model.Paginator;
 import io.github.imsejin.mybatis.pagination.support.InterceptorSupport;
@@ -105,7 +105,7 @@ public class PaginationInterceptor implements Interceptor {
         long totalItems = ((List<Long>) invocation.proceed()).get(0);
 
         List<?> items = (List<?>) resultSet;
-        return new Paginator<>(items, new Page((int) totalItems, pageable));
+        return new Paginator<>(items, new PageInfo((int) totalItems, pageable));
     }
 
     private static MappedStatement newMappedStatement(MappedStatement ms, BoundSql boundSql, List<ResultMap> resultMaps,

@@ -27,11 +27,11 @@ public class Paginator<T> implements List<T> {
 
     private final List<T> items;
 
-    private final Page page;
+    private final PageInfo pageInfo;
 
-    public Paginator(List<T> items, Page page) {
+    public Paginator(List<T> items, PageInfo pageInfo) {
         this.items = items == null ? Collections.emptyList() : items;
-        this.page = page;
+        this.pageInfo = pageInfo;
     }
 
     @Override
