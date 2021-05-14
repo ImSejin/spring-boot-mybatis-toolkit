@@ -41,7 +41,7 @@ public class PageRequestResolver implements HandlerMethodArgumentResolver {
 
         String query = paramMap.get(PageRequest.QUERY_PROPERTY_NAME);
         paramMap.remove(PageRequest.QUERY_PROPERTY_NAME);
-        PageRequest pageRequest = (PageRequest) objectMapper.convertValue(paramMap, parameter.getParameterType());
+        PageRequest pageRequest = objectMapper.convertValue(paramMap, PageRequest.class);
 
         if (StringUtils.hasText(query)) {
             Map<String, Object> queryMap = objectMapper.readValue(query, Map.class);
