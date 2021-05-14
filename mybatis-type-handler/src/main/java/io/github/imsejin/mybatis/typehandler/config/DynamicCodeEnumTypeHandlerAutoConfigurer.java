@@ -66,7 +66,7 @@ public class DynamicCodeEnumTypeHandlerAutoConfigurer {
         this.reflections = reflections;
     }
 
-    public Map<Class<? extends CodeEnum>, TypeHandler<?>> findTypeHandlers() throws ReflectiveOperationException {
+    public Map<Class<?>, TypeHandler<?>> findTypeHandlers() throws ReflectiveOperationException {
         Set<Class<? extends CodeEnum>> subclasses = this.reflections.getSubTypesOf(CodeEnum.class);
 
         // 'java.lang.Class'를 파라미터로 갖는 'CodeEnumTypeHandler'의 생성자.
@@ -75,7 +75,7 @@ public class DynamicCodeEnumTypeHandlerAutoConfigurer {
 
         ClassLoader classLoader = getClass().getClassLoader();
 
-        Map<Class<? extends CodeEnum>, TypeHandler<?>> typeHandlerMap = new HashMap<>();
+        Map<Class<?>, TypeHandler<?>> typeHandlerMap = new HashMap<>();
         for (Class<? extends CodeEnum> type : subclasses) {
             /*
              * 'Enum'이 아닌 타입이거나, abstract method를 갖고 있는 'Enum'의 경우
