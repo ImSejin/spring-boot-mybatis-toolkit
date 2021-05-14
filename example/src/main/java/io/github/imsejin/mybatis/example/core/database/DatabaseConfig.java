@@ -3,10 +3,13 @@ package io.github.imsejin.mybatis.example.core.database;
 import com.zaxxer.hikari.HikariDataSource;
 import io.github.imsejin.mybatis.example.Application;
 import io.github.imsejin.mybatis.example.core.database.mybatis.config.DynamicCodeEnumTypeHandlerAutoConfig;
+import io.github.imsejin.mybatis.pagination.dialect.MySQLDialect;
+import io.github.imsejin.mybatis.pagination.interceptor.PaginationInterceptor;
 import io.github.imsejin.mybatis.typehandler.support.TypeHandlerSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.BaseTypeHandler;
@@ -70,8 +73,8 @@ public class DatabaseConfig {
         log.info("SqlSessionFactoryBean registered {} type handler(s): {}",
                 typeHandlerMap.size(), typeHandlerMap.keySet().stream().map(Class::getSimpleName).collect(toList()));
 
-//        Interceptor interceptor = new PaginatorInterceptor(new MySQLDialect());
-//        factoryBean.setPlugins(interceptor);
+        Interceptor interceptor = new PaginationInterceptor(new MySQLDialect());
+        factoryBean.setPlugins(interceptor);
 
         return factoryBean.getObject();
     }
