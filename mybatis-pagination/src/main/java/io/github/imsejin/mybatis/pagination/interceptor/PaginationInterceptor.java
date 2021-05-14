@@ -14,14 +14,13 @@ import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.SqlSource;
-import org.apache.ibatis.plugin.Interceptor;
-import org.apache.ibatis.plugin.Intercepts;
-import org.apache.ibatis.plugin.Invocation;
-import org.apache.ibatis.plugin.Signature;
+import org.apache.ibatis.plugin.*;
+import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -64,6 +63,11 @@ public class PaginationInterceptor implements Interceptor {
     private Properties properties;
 
     @Override
+    public Object plugin(Object target) {
+        return Plugin.wrap(target, this);
+    }
+
+    @Override
     public void setProperties(Properties properties) {
         this.properties = properties;
     }
@@ -79,11 +83,11 @@ public class PaginationInterceptor implements Interceptor {
         if (mapperMethod == null) return invocation.proceed();
 
         BoundSql boundSql = ms.getBoundSql(param);
+        Configuration config = ms.getConfiguration();
 
         // Creates pagination query.
         Pageable pageable = InterceptorSupport.getPageableFromParam(param);
-        BoundSql pagingBoundSql = this.dialect.createOffsetLimitBoundSql(boundSql, ms.getConfiguration(), pageable);
-        Class<?> resultType = InterceptorSupport.findResultMapType(ms);
+        BoundSql pagingBoundSql = this.dialect.createOffsetLimitBoundSql(boundSql, config, pageable);
 
         // Executes pagination query.
         invocation.getArgs()[0] = newMappedStatement(ms, pagingBoundSql, ms.getResultMaps(), ms.getId() + "$pagination",
@@ -91,7 +95,7 @@ public class PaginationInterceptor implements Interceptor {
         Object resultSet = invocation.proceed();
 
         // Creates total count query.
-        BoundSql countBoundSql = this.dialect.createCountBoundSql(boundSql, ms.getConfiguration());
+        BoundSql countBoundSql = this.dialect.createCountBoundSql(boundSql, config);
 
         // Executes total count query.
         ResultMap countResultMap = new ResultMap.Builder(config, "", Long.class, Collections.emptyList()).build();

@@ -1,6 +1,5 @@
 package io.github.imsejin.mybatis.example.core.web;
 
-import io.github.imsejin.mybatis.example.Application;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
@@ -17,11 +16,12 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
 
+    private final Reflections reflections;
+
     private final ApplicationContext context;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        Reflections reflections = new Reflections(Application.class.getPackage().getName());
         Set<Class<? extends HandlerMethodArgumentResolver>> resolverTypes = reflections
                 .getSubTypesOf(HandlerMethodArgumentResolver.class);
 
