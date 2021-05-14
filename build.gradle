@@ -21,6 +21,8 @@ buildscript {
 plugins {
     id("java")
     id("java-library") // For using "api"; https://jongmin92.github.io/2019/05/09/Gradle/gradle-api-vs-implementation
+    id("maven-publish") // For publishing artifact to maven central.
+    id("signing") // For authentication when publishing artifact.
 }
 
 configurations {
@@ -34,7 +36,13 @@ allprojects {
     version = "0.1.0"
 }
 
-subprojects {
+// subprojects {
+configure(subprojects) { it ->
+    if (Boolean.valueOf(it.property("library") as String)) {
+        apply(plugin: "maven-publish")
+        apply(plugin: "signing")
+    }
+
     apply(plugin: "java")
     apply(plugin: "java-library")
 
