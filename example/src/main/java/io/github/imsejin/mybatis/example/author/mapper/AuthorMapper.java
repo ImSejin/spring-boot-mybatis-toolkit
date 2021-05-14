@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.*;
 @Mapper
 public interface AuthorMapper {
 
+    @ResultMap("author")
     @Select("<script> " +
             "SELECT * " +
             "FROM AUTHOR " +
@@ -22,17 +23,22 @@ public interface AuthorMapper {
             "</if> " +
 
             "<if test='query.startDate != null'> " +
-            "AND BIRTHDATE &lt; #{query.startDate} " +
+            "AND BIRTHDATE &gt; #{query.startDate} " +
             "</if> " +
 
             "<if test='query.endDate != null'> " +
             "AND BIRTHDATE &lt; #{query.endDate} " +
             "</if> " +
 
-             "LIMIT #{limit} OFFSET #{offset} " +
             "</script>")
     Paginator<Author> selectAll(Pageable pageable);
 
+    @Results(id = "author", value = {
+            @Result(property = "id", column = "ID"),
+            @Result(property = "name", column = "NAME"),
+            @Result(property = "country", column = "COUNTRY"),
+            @Result(property = "birthdate", column = "BIRTHDATE"),
+    })
     @Select("SELECT * " +
             "FROM AUTHOR " +
             "WHERE ID = #{id}")
