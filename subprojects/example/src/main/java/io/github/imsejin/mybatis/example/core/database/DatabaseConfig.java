@@ -79,7 +79,7 @@ public class DatabaseConfig {
 
     private Map<Class<?>, TypeHandler<?>> newTypeHandlerMap(TypeHandlers.TypeHandlerBuilder builder) {
         // java.util.UUID
-        builder.add(UUID.class, UUID::toString, UUID::fromString);
+        builder.add(UUID::toString, UUID::fromString);
 
         return builder.build().get();
     }

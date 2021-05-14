@@ -19,8 +19,7 @@ public final class TypeHandlerSupport {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> BaseTypeHandler<T> make(Class<T> type, Function<T, String> input, Function<String, T> output)
-            throws ReflectiveOperationException {
+    public static <T> BaseTypeHandler<T> make(Class<T> type, Function<T, String> input, Function<String, T> output) {
         ClassLoader classLoader = TypeHandlerSupport.class.getClassLoader();
 
         // Creates BaseTypeHandler<T> as a type.
@@ -109,7 +108,11 @@ public final class TypeHandlerSupport {
                     return code == null ? null : output.apply(code);
                 })).make().load(classLoader).getLoaded();
 
-        return dynamicType.getConstructor().newInstance();
+        try {
+            return dynamicType.getConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

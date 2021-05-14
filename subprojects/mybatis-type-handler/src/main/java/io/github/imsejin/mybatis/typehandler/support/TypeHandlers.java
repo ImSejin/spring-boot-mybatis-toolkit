@@ -1,5 +1,6 @@
 package io.github.imsejin.mybatis.typehandler.support;
 
+import net.jodah.typetools.TypeResolver;
 import org.apache.ibatis.type.TypeHandler;
 
 import java.util.HashMap;
@@ -37,12 +38,10 @@ public class TypeHandlers {
             return this;
         }
 
-        public <T> TypeHandlerBuilder add(Class<T> type, Function<T, String> input, Function<String, T> output) {
-            try {
-                this.typeHandlerMap.put(type, TypeHandlerSupport.make(type, input, output));
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException(e);
-            }
+        @SuppressWarnings("unchecked")
+        public <T> TypeHandlerBuilder add(Function<T, String> input, Function<String, T> output) {
+            Class<T> type = (Class<T>) TypeResolver.resolveRawArguments(Function.class, input.getClass())[0];
+            this.typeHandlerMap.put(type, TypeHandlerSupport.make(type, input, output));
             return this;
         }
 
