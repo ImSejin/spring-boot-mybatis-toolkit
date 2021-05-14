@@ -16,7 +16,6 @@ import org.apache.ibatis.type.TypeException;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -146,13 +145,8 @@ public final class InterceptorSupport {
         return new StaticSqlSource(config, sql, mappings);
     }
 
-    public static MappedStatement copyWith(MappedStatement origin, SqlSource sqlSource, String id, Class<?> resultType) {
-        ResultMap countResultMap = new ResultMap
-                .Builder(origin.getConfiguration(), id, resultType, Collections.emptyList())
-                .build();
-
-        List<ResultMap> resultMaps = Collections.singletonList(countResultMap);
-
+    public static MappedStatement copyWith(MappedStatement origin, SqlSource sqlSource, List<ResultMap> resultMaps,
+                                           String id, Class<?> resultType) {
         return new MappedStatement.Builder(origin.getConfiguration(), id,
                 sqlSource, origin.getSqlCommandType())
                 .resource(origin.getResource())

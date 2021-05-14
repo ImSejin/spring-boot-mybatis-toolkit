@@ -12,6 +12,7 @@ import org.apache.ibatis.executor.resultset.ResultSetHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.plugin.Intercepts;
@@ -85,23 +86,28 @@ public class PaginationInterceptor implements Interceptor {
         Class<?> resultType = InterceptorSupport.findResultMapType(ms);
 
         // Executes pagination query.
-        invocation.getArgs()[0] = newMappedStatement(ms, pagingBoundSql, ms.getId() + "$pagination", resultType);
+        invocation.getArgs()[0] = newMappedStatement(ms, pagingBoundSql, ms.getResultMaps(), ms.getId() + "$pagination",
+                InterceptorSupport.findResultMapType(ms));
         Object resultSet = invocation.proceed();
 
         // Creates total count query.
         BoundSql countBoundSql = this.dialect.createCountBoundSql(boundSql, ms.getConfiguration());
 
         // Executes total count query.
-        invocation.getArgs()[0] = newMappedStatement(ms, countBoundSql, ms.getId() + "$count", Long.class);
+        ResultMap countResultMap = new ResultMap.Builder(config, "", Long.class, Collections.emptyList()).build();
+        List<ResultMap> countResultMaps = Collections.singletonList(countResultMap);
+        invocation.getArgs()[0] = newMappedStatement(ms, countBoundSql, countResultMaps, ms.getId() + "$count",
+                Long.class);
         long totalItems = ((List<Long>) invocation.proceed()).get(0);
 
         List<?> items = (List<?>) resultSet;
         return new Paginator<>(items, new Page((int) totalItems, pageable));
     }
 
-    private static MappedStatement newMappedStatement(MappedStatement ms, BoundSql boundSql, String id, Class<?> resultType) {
+    private static MappedStatement newMappedStatement(MappedStatement ms, BoundSql boundSql, List<ResultMap> resultMaps,
+                                                      String id, Class<?> resultType) {
         SqlSource sqlSource = InterceptorSupport.createSqlSource(ms.getConfiguration(), boundSql);
-        return InterceptorSupport.copyWith(ms, sqlSource, id, resultType);
+        return InterceptorSupport.copyWith(ms, sqlSource, resultMaps, id, resultType);
     }
 
 }
