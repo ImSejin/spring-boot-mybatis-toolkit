@@ -1,11 +1,10 @@
 package io.github.imsejin.mybatis.pagination.dialect;
 
+import io.github.imsejin.mybatis.pagination.model.Pageable;
 import io.github.imsejin.mybatis.pagination.support.InterceptorSupport;
 import net.sf.jsqlparser.expression.Function;
-import net.sf.jsqlparser.statement.select.OrderByElement;
-import net.sf.jsqlparser.statement.select.PlainSelect;
-import net.sf.jsqlparser.statement.select.SelectExpressionItem;
-import net.sf.jsqlparser.statement.select.SelectItem;
+import net.sf.jsqlparser.expression.LongValue;
+import net.sf.jsqlparser.statement.select.*;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.session.Configuration;
@@ -20,10 +19,10 @@ import static java.util.stream.Collectors.toList;
 public class MySQLDialect implements Dialect {
 
     @Override
-    public BoundSql createCountBoundSql(BoundSql originalBoundSql, Configuration config) {
-        PlainSelect select = InterceptorSupport.newSelect(originalBoundSql.getSql());
+    public BoundSql createCountBoundSql(BoundSql origin, Configuration config) {
+        PlainSelect select = InterceptorSupport.newSelect(origin.getSql());
 
-        List<ParameterMapping> mappings = getFilteredParameterMappings(originalBoundSql, select);
+        List<ParameterMapping> mappings = getFilteredParameterMappings(origin, select);
 
         // Add 'COUNT(*)' as select item into root select.
         Function countFunc = new Function();
@@ -37,12 +36,22 @@ public class MySQLDialect implements Dialect {
         select.setLimit(null);
         select.setOffset(null);
 
-        return new BoundSql(config, select.toString(), mappings, originalBoundSql.getParameterObject());
+        return InterceptorSupport.copyWith(origin, config, select.toString(), mappings);
     }
 
     @Override
-    public BoundSql createOffsetLimitBoundSql(BoundSql originalBoundSql, Configuration config) {
-        return null;
+    public BoundSql createOffsetLimitBoundSql(BoundSql origin, Configuration config, Pageable pageable) {
+        PlainSelect select = InterceptorSupport.newSelect(origin.getSql());
+
+        Limit limit = new Limit();
+        limit.setRowCount(new LongValue(pageable.getLimit()));
+        select.setLimit(limit);
+
+        Offset offset = new Offset();
+        offset.setOffset(pageable.getOffset());
+        select.setOffset(offset);
+
+        return InterceptorSupport.copyWith(origin, config, select.toString());
     }
 
     private static List<ParameterMapping> getFilteredParameterMappings(BoundSql boundSql, PlainSelect select) {

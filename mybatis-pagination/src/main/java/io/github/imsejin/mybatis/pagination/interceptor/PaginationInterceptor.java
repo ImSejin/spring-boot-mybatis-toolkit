@@ -6,14 +6,12 @@ import io.github.imsejin.mybatis.pagination.model.Pageable;
 import io.github.imsejin.mybatis.pagination.model.Paginator;
 import io.github.imsejin.mybatis.pagination.support.InterceptorSupport;
 import lombok.RequiredArgsConstructor;
-import org.apache.ibatis.builder.StaticSqlSource;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.resultset.ResultSetHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.plugin.Intercepts;
@@ -23,7 +21,6 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -60,7 +57,6 @@ public class PaginationInterceptor implements Interceptor {
 
     private static final int MAPPED_STATEMENT_INDEX = 0;
     private static final int PARAMETER_INDEX = 1;
-    private static final int ROW_BOUNDS_INDEX = 2;
 
     private final Dialect dialect;
 
@@ -68,81 +64,44 @@ public class PaginationInterceptor implements Interceptor {
 
     @Override
     public void setProperties(Properties properties) {
-//        log.info("===== properties: {}", properties);
         this.properties = properties;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public Object intercept(Invocation invocation) throws Throwable {
-//        log.info("argument types: {}", Arrays.toString(Arrays.stream(invocation.getArgs())
-//                .map(it -> it == null ? "null" : it.getClass().getSimpleName()).toArray()));
-//        log.info("arguments: {}", Arrays.toString(invocation.getArgs()));
-
         MappedStatement ms = (MappedStatement) invocation.getArgs()[MAPPED_STATEMENT_INDEX];
         Object param = invocation.getArgs()[PARAMETER_INDEX];
 
+        // Checks if the mapper method will be paginated.
         Method mapperMethod = InterceptorSupport.findMethod(ms);
         if (mapperMethod == null) return invocation.proceed();
 
         BoundSql boundSql = ms.getBoundSql(param);
-//        log.info("=================== boundSql: {}", boundSql.getSql());
 
-        // Manipulates query.
-        BoundSql countBoundSql = this.dialect.createCountBoundSql(boundSql, ms.getConfiguration());;
-//        log.info("countBoundSql: {}", countBoundSql.getSql());
+        // Creates pagination query.
+        Pageable pageable = InterceptorSupport.getPageableFromParam(param);
+        BoundSql pagingBoundSql = this.dialect.createOffsetLimitBoundSql(boundSql, ms.getConfiguration(), pageable);
+        Class<?> resultType = InterceptorSupport.findResultMapType(ms);
 
-        StaticSqlSource sqlSource = new StaticSqlSource(ms.getConfiguration(), countBoundSql.getSql(),
-                countBoundSql.getParameterMappings());
-        MappedStatement countMs = createCountMappedStatement(ms, sqlSource);
-
-        // Executes total count query.
-        invocation.getArgs()[0] = countMs;
-        long totalItems = ((List<Long>) invocation.proceed()).get(0);
-
-        // Executes items query.
-        invocation.getArgs()[0] = ms;
+        // Executes pagination query.
+        invocation.getArgs()[0] = newMappedStatement(ms, pagingBoundSql, ms.getId() + "$pagination", resultType);
         Object resultSet = invocation.proceed();
 
+        // Creates total count query.
+        BoundSql countBoundSql = this.dialect.createCountBoundSql(boundSql, ms.getConfiguration());
+
+        // Executes total count query.
+        invocation.getArgs()[0] = newMappedStatement(ms, countBoundSql, ms.getId() + "$count", Long.class);
+        long totalItems = ((List<Long>) invocation.proceed()).get(0);
+
         List<?> items = (List<?>) resultSet;
-        Pageable pageable = InterceptorSupport.getPageableFromParam(param);
         return new Paginator<>(items, new Page((int) totalItems, pageable));
     }
 
-    private static List<ResultMap> createCountResultMaps(MappedStatement ms) {
-        List<ResultMap> countResultMaps = new ArrayList<>();
-
-        ResultMap countResultMap =
-                new ResultMap.Builder(ms.getConfiguration(), ms.getId() + "$count", Long.class, new ArrayList<>())
-                        .build();
-        countResultMaps.add(countResultMap);
-
-        return countResultMaps;
-    }
-
-    private MappedStatement createCountMappedStatement(MappedStatement ms, SqlSource source) {
-        List<ResultMap> countResultMaps = createCountResultMaps(ms);
-
-        return new MappedStatement.Builder(ms.getConfiguration(), ms.getId() + "$count",
-                source, ms.getSqlCommandType())
-                .resource(ms.getResource())
-                .parameterMap(ms.getParameterMap())
-                .resultMaps(countResultMaps)
-                .fetchSize(ms.getFetchSize())
-                .timeout(ms.getTimeout())
-                .statementType(ms.getStatementType())
-                .resultSetType(ms.getResultSetType())
-                .cache(ms.getCache())
-                .flushCacheRequired(ms.isFlushCacheRequired())
-                .useCache(true)
-                .resultOrdered(ms.isResultOrdered())
-                .keyGenerator(ms.getKeyGenerator())
-                .keyColumn(ms.getKeyColumns() != null ? String.join(",", ms.getKeyColumns()) : null)
-                .keyProperty(ms.getKeyProperties() != null ? String.join(",", ms.getKeyProperties()) : null)
-                .databaseId(ms.getDatabaseId())
-                .lang(ms.getLang())
-                .resultSets(ms.getResultSets() != null ? String.join(",", ms.getResultSets()) : null)
-                .build();
+    private static MappedStatement newMappedStatement(MappedStatement ms, BoundSql boundSql, String id, Class<?> resultType) {
+        SqlSource sqlSource = InterceptorSupport.createSqlSource(ms.getConfiguration(), boundSql);
+        return InterceptorSupport.copyWith(ms, sqlSource, id, resultType);
     }
 
 }
