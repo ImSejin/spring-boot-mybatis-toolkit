@@ -7,6 +7,7 @@ buildscript {
                 reflections: "0.9.12",
                 bytebuddy  : "1.11.0",
                 typetools  : "0.6.3",
+                jsqlparser : "4.0",
                 jackson    : "2.12.3",
                 mybatis    : "3.5.7",
                 junit5     : "5.7.1",

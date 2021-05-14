@@ -1,5 +1,5 @@
 dependencies {
-    api(group: "com.github.jsqlparser", name: "jsqlparser", version: "4.0")
+    api(group: "com.github.jsqlparser", name: "jsqlparser", version: "$versions.jsqlparser")
     implementation(group: "org.mybatis", name: "mybatis", version: "$versions.mybatis")
     implementation(group: "com.fasterxml.jackson.core", name: "jackson-databind", version: "$versions.jackson")
 
