@@ -1,2 +1,2 @@
 # Spring Boot MyBatis Toolkit
-Toolkit for MyBatis with Spring Boot integration.
+Toolkit for integration of MyBatis and Spring Boot.
