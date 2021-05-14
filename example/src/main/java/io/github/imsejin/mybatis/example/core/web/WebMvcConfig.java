@@ -11,6 +11,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.stream.Collectors.toList;
+
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
@@ -27,7 +29,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         resolverTypes.forEach(it -> resolvers.add(context.getBean(it)));
 
-        log.info("WebMvcConfig registered {} resolver(s) for handler method argument", resolverTypes.size());
+        log.info("WebMvcConfig registered {} handler method argument resolver(s): {}",
+                resolverTypes.size(), resolverTypes.stream().map(Class::getSimpleName).collect(toList()));
     }
 
 }
