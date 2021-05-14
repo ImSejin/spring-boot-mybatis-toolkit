@@ -6,4 +6,6 @@ dependencies {
     api(group: "org.reflections", name: "reflections", version: "$versions.reflections")
     // Bytecode manipulator, dynamic type generator.
     implementation(group: "net.bytebuddy", name: "byte-buddy", version: "$versions.bytebuddy")
+    // Finder for generic types.
+    implementation(group: "net.jodah", name: "typetools", version: "$versions.typetools")
 }
