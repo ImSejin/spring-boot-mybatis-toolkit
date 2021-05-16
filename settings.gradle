@@ -6,6 +6,8 @@ include(
 )
 
 rootProject.children.forEach {it ->
+    // Enables to refer to each project without parent directory.
     it.projectDir = file("subprojects/$it.name")
+    // Changes build filename of subprojects.
     it.buildFileName = "$it.name-build.gradle"
 }
