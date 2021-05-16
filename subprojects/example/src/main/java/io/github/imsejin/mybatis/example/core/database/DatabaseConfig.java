@@ -65,13 +65,13 @@ public class DatabaseConfig {
         // Registers type handlers.
         Map<Class<?>, TypeHandler<?>> typeHandlerMap = newTypeHandlerMap(builder);
         factoryBean.setTypeHandlers(typeHandlerMap.values().toArray(new TypeHandler[0]));
-        log.info("SqlSessionFactoryBean registered {} type handler(s): {}",
-                typeHandlerMap.size(), typeHandlerMap.keySet().stream().map(Class::getSimpleName).collect(toList()));
+        log.debug("SqlSessionFactory registered {} type handler(s): {}", typeHandlerMap.size(),
+                typeHandlerMap.keySet().stream().map(Class::getSimpleName).collect(toList()));
 
         // Registers interceptors.
         List<Interceptor> interceptors = Arrays.asList(new PaginationInterceptor(new MySQLDialect()));
         factoryBean.setPlugins(interceptors.toArray(new Interceptor[0]));
-        log.info("SqlSessionFactoryBean registered {} interceptor(s): {}", interceptors.size(),
+        log.debug("SqlSessionFactory registered {} interceptor(s): {}", interceptors.size(),
                 interceptors.stream().map(it -> it.getClass().getSimpleName()).collect(toList()));
 
         return factoryBean.getObject();

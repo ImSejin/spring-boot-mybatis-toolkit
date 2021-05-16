@@ -29,7 +29,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         resolverTypes.forEach(it -> resolvers.add(context.getBean(it)));
 
-        log.info("WebMvcConfig registered {} handler method argument resolver(s): {}",
+        log.debug("WebMvcConfig registered {} handler method argument resolver(s): {}",
                 resolverTypes.size(), resolverTypes.stream().map(Class::getSimpleName).collect(toList()));
     }
 
