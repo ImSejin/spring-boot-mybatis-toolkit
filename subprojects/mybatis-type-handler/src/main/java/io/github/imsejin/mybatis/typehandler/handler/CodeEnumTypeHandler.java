@@ -24,7 +24,7 @@ public abstract class CodeEnumTypeHandler<E extends Enum<E>> extends BaseTypeHan
     private final CodeEnum[] enumConstants;
 
     public CodeEnumTypeHandler(Class<E> type) {
-        this.type = Objects.requireNonNull(type, "Type cannot be null");
+        this.type = Objects.requireNonNull(type, "Type should not be null");
         if (!type.isEnum()) {
             String message = String.format("Type must be enum: '%s'", type.getName());
             throw new IllegalArgumentException(message);
