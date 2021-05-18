@@ -8,26 +8,58 @@ import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
 import org.apache.ibatis.binding.MapperMethod;
-import org.apache.ibatis.builder.StaticSqlSource;
-import org.apache.ibatis.mapping.*;
+import org.apache.ibatis.mapping.BoundSql;
+import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.ResultMap;
+import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.plugin.Invocation;
-import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.TypeException;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.IntStream;
 
+/**
+ * Supporter for MyBatis interceptor.
+ *
+ * @see Interceptor
+ */
 public final class InterceptorSupport {
 
     private InterceptorSupport() {
     }
 
+    /**
+     * Finds a method by mapped statement.
+     *
+     * @param ms mapped statement
+     * @return mapper method
+     * @see #findMethod(String)
+     */
     public static Method findMethod(MappedStatement ms) {
         return findMethod(ms.getId());
     }
 
+    /**
+     * Finds a method by fully qualified method name.
+     *
+     * <p> There are some conditions of finding method.
+     * This doesn't find a method, returns null.
+     *
+     * <ol>
+     *     <li>Return type is {@link Paginator}?</li>
+     *     <li>Has {@link Pageable} type or its implementation type in parameters?</li>
+     * </ol>
+     *
+     * <pre><code>
+     *     String fullName = "io.github.imsejin.mybatis.example.author.mapper.AuthorMapper.selectAll";
+     *     Method selectAll = findMethod(fullName);
+     * </code></pre>
+     *
+     * @param fullName fully qualified method name
+     * @return mapper method
+     * @throws ClassNotFoundException if full name is undefined
+     */
     public static Method findMethod(String fullName) {
         final int index = fullName.lastIndexOf('.');
         String className = fullName.substring(0, index);
@@ -41,7 +73,7 @@ public final class InterceptorSupport {
         }
 
         for (Method method : clazz.getDeclaredMethods()) {
-            if (!method.getName().equals(methodName)) continue;
+            if (!method.getName().equals(methodName)) continue; // Trustworthy condition; it must be always false.
             if (method.getReturnType() != Paginator.class) continue;
             if (Arrays.stream(method.getParameterTypes()).noneMatch(Pageable.class::isAssignableFrom)) continue;
 
@@ -60,15 +92,16 @@ public final class InterceptorSupport {
     }
 
     /**
-     * Returns pageable instance from parameter.
+     * Returns {@link Pageable} instance from parameter.
      *
-     * <p> Element in index 1 of {@link Invocation#getArgs()} is the
-     * argument of mapper's method. When parameter length of its method is 1,
-     * the type of element is the type of argument. When greater than or equal to 2,
-     * the type of elements is {@link MapperMethod.ParamMap}.
+     * <p> This finds a {@link Pageable} instance
+     * from parameter in {@link Invocation#getArgs()}.
      *
      * @param param mapper parameter
      * @return pageable instance
+     * @throws IllegalArgumentException if pageable can not be found
+     * @throws TypeException            if parameter is null
+     * @see io.github.imsejin.mybatis.pagination.constant.MapperParameterType#from(BoundSql)
      */
     public static Pageable getPageableFromParam(Object param) {
         if (param instanceof Pageable) {
@@ -87,7 +120,16 @@ public final class InterceptorSupport {
         }
     }
 
-    public static PlainSelect newSelect(String selectSql) {
+    /**
+     * Parses select SQL query.
+     *
+     * @param selectSql select SQL query
+     * @return {@link PlainSelect} instance
+     * @throws JSQLParserException if failed to parse query
+     * @throws TypeException       if query is not select query
+     * @see net.sf.jsqlparser.parser.CCJSqlParser
+     */
+    public static PlainSelect parseSelect(String selectSql) {
         Statement statement;
         try {
             statement = CCJSqlParserUtil.parse(selectSql);
@@ -122,59 +164,6 @@ public final class InterceptorSupport {
         if (numOfMappings == 0) return new int[0];
 
         return IntStream.range(0, numOfMappings).toArray();
-    }
-
-    public static int countOccurrencesOf(String str, String sub) {
-        if (str == null || str.isEmpty() || sub == null || sub.isEmpty()) return 0;
-
-        int count = 0;
-        int pos = 0;
-        int idx;
-        while ((idx = str.indexOf(sub, pos)) != -1) {
-            ++count;
-            pos = idx + sub.length();
-        }
-        return count;
-    }
-
-    public static SqlSource createSqlSource(Configuration config, BoundSql boundSql) {
-        return new StaticSqlSource(config, boundSql.getSql(), boundSql.getParameterMappings());
-    }
-
-    public static SqlSource createSqlSource(Configuration config, String sql, List<ParameterMapping> mappings) {
-        return new StaticSqlSource(config, sql, mappings);
-    }
-
-    public static MappedStatement copyWith(MappedStatement origin, SqlSource sqlSource, List<ResultMap> resultMaps,
-                                           String id, Class<?> resultType) {
-        return new MappedStatement.Builder(origin.getConfiguration(), id,
-                sqlSource, origin.getSqlCommandType())
-                .resource(origin.getResource())
-                .parameterMap(origin.getParameterMap())
-                .resultMaps(resultMaps)
-                .fetchSize(origin.getFetchSize())
-                .timeout(origin.getTimeout())
-                .statementType(origin.getStatementType())
-                .resultSetType(origin.getResultSetType())
-                .cache(origin.getCache())
-                .flushCacheRequired(origin.isFlushCacheRequired())
-                .useCache(true)
-                .resultOrdered(origin.isResultOrdered())
-                .keyGenerator(origin.getKeyGenerator())
-                .keyColumn(origin.getKeyColumns() == null ? null : String.join(",", origin.getKeyColumns()))
-                .keyProperty(origin.getKeyProperties() == null ? null : String.join(",", origin.getKeyProperties()))
-                .databaseId(origin.getDatabaseId())
-                .lang(origin.getLang())
-                .resultSets(origin.getResultSets() == null ? null : String.join(",", origin.getResultSets()))
-                .build();
-    }
-
-    public static BoundSql copyWith(BoundSql origin, Configuration config, String sql) {
-        return new BoundSql(config, sql, origin.getParameterMappings(), origin.getParameterObject());
-    }
-
-    public static BoundSql copyWith(BoundSql origin, Configuration config, String sql, List<ParameterMapping> mappings) {
-        return new BoundSql(config, sql, mappings, origin.getParameterObject());
     }
 
 }

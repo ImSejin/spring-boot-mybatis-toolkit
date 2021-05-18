@@ -1,7 +1,9 @@
 package io.github.imsejin.mybatis.pagination.dialect;
 
+import io.github.imsejin.mybatis.pagination.constant.RebuildMode;
 import io.github.imsejin.mybatis.pagination.model.Pageable;
 import io.github.imsejin.mybatis.pagination.support.InterceptorSupport;
+import io.github.imsejin.mybatis.pagination.support.rebuilder.Rebuilder;
 import net.sf.jsqlparser.expression.Function;
 import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.statement.select.*;
@@ -20,9 +22,9 @@ public class MySQLDialect implements Dialect {
 
     @Override
     public BoundSql createCountBoundSql(BoundSql origin, Configuration config) {
-        PlainSelect select = InterceptorSupport.newSelect(origin.getSql());
+        PlainSelect select = InterceptorSupport.parseSelect(origin.getSql());
 
-        List<ParameterMapping> mappings = getFilteredParameterMappings(origin, select);
+        List<ParameterMapping> parameterMappings = getFilteredParameterMappings(origin, select);
 
         // Add 'COUNT(*)' as select item into root select.
         Function countFunc = new Function();
@@ -36,12 +38,13 @@ public class MySQLDialect implements Dialect {
         select.setLimit(null);
         select.setOffset(null);
 
-        return InterceptorSupport.copyWith(origin, config, select.toString(), mappings);
+        return Rebuilder.init(origin, RebuildMode.WRAP).config(config)
+                .sql(select.toString()).parameterMappings(parameterMappings).rebuild();
     }
 
     @Override
     public BoundSql createOffsetLimitBoundSql(BoundSql origin, Configuration config, Pageable pageable) {
-        PlainSelect select = InterceptorSupport.newSelect(origin.getSql());
+        PlainSelect select = InterceptorSupport.parseSelect(origin.getSql());
 
         Limit limit = new Limit();
         limit.setRowCount(new LongValue(pageable.getLimit()));
@@ -51,7 +54,7 @@ public class MySQLDialect implements Dialect {
         offset.setOffset(pageable.getOffset());
         select.setOffset(offset);
 
-        return InterceptorSupport.copyWith(origin, config, select.toString());
+        return Rebuilder.init(origin, RebuildMode.WRAP).config(config).sql(select.toString()).rebuild();
     }
 
     private static List<ParameterMapping> getFilteredParameterMappings(BoundSql boundSql, PlainSelect select) {
@@ -60,7 +63,7 @@ public class MySQLDialect implements Dialect {
         // Removes parameter mappings in select statement.
         int selelctOccurrences = 0;
         for (SelectItem selectItem : select.getSelectItems()) {
-            selelctOccurrences += InterceptorSupport.countOccurrencesOf(selectItem.toString(), "?");
+            selelctOccurrences += countOccurrencesOf(selectItem.toString(), "?");
         }
         for (int i = 0; i < selelctOccurrences; i++) {
             mappings[i] = null;
@@ -71,7 +74,7 @@ public class MySQLDialect implements Dialect {
         // Removes parameter mappings in offset statement.
         if (select.getOffset() != null) {
             int lastIndex = (mappings.length - 1) - otherOccurrences;
-            int occurrences = InterceptorSupport.countOccurrencesOf(select.getLimit().toString(), "?");
+            int occurrences = countOccurrencesOf(select.getLimit().toString(), "?");
             otherOccurrences += occurrences;
 
             for (int i = lastIndex; i > lastIndex - occurrences && i >= selelctOccurrences; i--) {
@@ -82,7 +85,7 @@ public class MySQLDialect implements Dialect {
         // Removes parameter mappings in limit statement.
         if (select.getLimit() != null) {
             int lastIndex = (mappings.length - 1) - otherOccurrences;
-            int occurrences = InterceptorSupport.countOccurrencesOf(select.getLimit().toString(), "?");
+            int occurrences = countOccurrencesOf(select.getLimit().toString(), "?");
             otherOccurrences += occurrences;
 
             for (int i = lastIndex; i > lastIndex - occurrences && i >= selelctOccurrences; i--) {
@@ -95,7 +98,7 @@ public class MySQLDialect implements Dialect {
             int lastIndex = (mappings.length - 1) - otherOccurrences;
             int occurrences = 0;
             for (OrderByElement orderByElement : select.getOrderByElements()) {
-                occurrences += InterceptorSupport.countOccurrencesOf(orderByElement.toString(), "?");
+                occurrences += countOccurrencesOf(orderByElement.toString(), "?");
             }
 
             for (int i = lastIndex; i > lastIndex - occurrences && i >= selelctOccurrences; i--) {
@@ -104,6 +107,19 @@ public class MySQLDialect implements Dialect {
         }
 
         return Arrays.stream(mappings).filter(Objects::nonNull).collect(toList());
+    }
+
+    private static int countOccurrencesOf(String str, String sub) {
+        if (str == null || str.isEmpty() || sub == null || sub.isEmpty()) return 0;
+
+        int count = 0;
+        int pos = 0;
+        int idx;
+        while ((idx = str.indexOf(sub, pos)) != -1) {
+            ++count;
+            pos = idx + sub.length();
+        }
+        return count;
     }
 
 }

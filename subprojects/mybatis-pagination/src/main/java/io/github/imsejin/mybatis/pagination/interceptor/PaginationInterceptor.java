@@ -1,10 +1,12 @@
 package io.github.imsejin.mybatis.pagination.interceptor;
 
+import io.github.imsejin.mybatis.pagination.constant.RebuildMode;
 import io.github.imsejin.mybatis.pagination.dialect.Dialect;
 import io.github.imsejin.mybatis.pagination.model.PageInfo;
 import io.github.imsejin.mybatis.pagination.model.Pageable;
 import io.github.imsejin.mybatis.pagination.model.Paginator;
 import io.github.imsejin.mybatis.pagination.support.InterceptorSupport;
+import io.github.imsejin.mybatis.pagination.support.rebuilder.Rebuilder;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
@@ -57,6 +59,8 @@ public class PaginationInterceptor implements Interceptor {
 
     private static final int MAPPED_STATEMENT_INDEX = 0;
     private static final int PARAMETER_INDEX = 1;
+    private static final int ROW_BOUNDS_INDEX = 2;
+    private static final int RESULT_HANDLER_INDEX = 3;
 
     private final Dialect dialect;
 
@@ -73,10 +77,12 @@ public class PaginationInterceptor implements Interceptor {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Object intercept(Invocation invocation) throws Throwable {
+        Executor executor = (Executor) invocation.getTarget();
         MappedStatement ms = (MappedStatement) invocation.getArgs()[MAPPED_STATEMENT_INDEX];
         Object param = invocation.getArgs()[PARAMETER_INDEX];
+        RowBounds rowBounds = (RowBounds) invocation.getArgs()[ROW_BOUNDS_INDEX];
+        ResultHandler<?> resultHandler = (ResultHandler<?>) invocation.getArgs()[RESULT_HANDLER_INDEX];
 
         // Checks if the mapper method will be paginated.
         Method mapperMethod = InterceptorSupport.findMethod(ms);
@@ -87,12 +93,11 @@ public class PaginationInterceptor implements Interceptor {
 
         // Creates pagination query.
         Pageable pageable = InterceptorSupport.getPageableFromParam(param);
-        BoundSql pagingBoundSql = this.dialect.createOffsetLimitBoundSql(boundSql, config, pageable);
+        BoundSql itemsBoundSql = this.dialect.createOffsetLimitBoundSql(boundSql, config, pageable);
 
         // Executes pagination query.
-        invocation.getArgs()[0] = newMappedStatement(ms, pagingBoundSql, ms.getResultMaps(), ms.getId() + "$pagination",
-                InterceptorSupport.findResultMapType(ms));
-        Object resultSet = invocation.proceed();
+        MappedStatement itemsMs = wrap(ms, itemsBoundSql, ms.getResultMaps(), "items");
+        List<?> items = executor.query(itemsMs, itemsBoundSql.getParameterObject(), rowBounds, resultHandler);
 
         // Creates total count query.
         BoundSql countBoundSql = this.dialect.createCountBoundSql(boundSql, config);
@@ -100,18 +105,28 @@ public class PaginationInterceptor implements Interceptor {
         // Executes total count query.
         ResultMap countResultMap = new ResultMap.Builder(config, "", Long.class, Collections.emptyList()).build();
         List<ResultMap> countResultMaps = Collections.singletonList(countResultMap);
-        invocation.getArgs()[0] = newMappedStatement(ms, countBoundSql, countResultMaps, ms.getId() + "$count",
-                Long.class);
-        long totalItems = ((List<Long>) invocation.proceed()).get(0);
+        MappedStatement countMs = wrap(ms, countBoundSql, countResultMaps, "count");
+        long totalItems = (Long) executor.query(countMs, countBoundSql.getParameterObject(), rowBounds, resultHandler)
+                .get(0);
 
-        List<?> items = (List<?>) resultSet;
         return new Paginator<>(items, new PageInfo((int) totalItems, pageable));
     }
 
-    private static MappedStatement newMappedStatement(MappedStatement ms, BoundSql boundSql, List<ResultMap> resultMaps,
-                                                      String id, Class<?> resultType) {
-        SqlSource sqlSource = InterceptorSupport.createSqlSource(ms.getConfiguration(), boundSql);
-        return InterceptorSupport.copyWith(ms, sqlSource, resultMaps, id, resultType);
+    /**
+     * Returns new {@link MappedStatement} instance.
+     *
+     * @param ms         mapped statement
+     * @param boundSql   bounded SQL
+     * @param resultMaps result maps
+     * @param suffix     suffix for id
+     * @return new {@link MappedStatement} instance
+     */
+    private static MappedStatement wrap(MappedStatement ms, BoundSql boundSql, List<ResultMap> resultMaps,
+                                        String suffix) {
+        SqlSource sqlSource = Rebuilder.init(ms.getConfiguration()).boundSql(boundSql).rebuild();
+
+        return Rebuilder.init(ms, RebuildMode.WRAP).sqlSource(sqlSource)
+                .resultMaps(resultMaps).suffix(suffix).rebuild();
     }
 
 }
