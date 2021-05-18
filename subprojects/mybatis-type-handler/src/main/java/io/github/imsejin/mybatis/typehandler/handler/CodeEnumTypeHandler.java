@@ -1,4 +1,4 @@
-package io.github.imsejin.mybatis.typehandler;
+package io.github.imsejin.mybatis.typehandler.handler;
 
 import io.github.imsejin.mybatis.typehandler.finder.DynamicCodeEnumTypeHandlerFinder;
 import io.github.imsejin.mybatis.typehandler.model.CodeEnum;
