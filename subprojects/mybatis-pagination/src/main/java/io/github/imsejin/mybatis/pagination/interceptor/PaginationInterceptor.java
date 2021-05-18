@@ -116,7 +116,7 @@ public class PaginationInterceptor implements Interceptor {
      * Returns new {@link MappedStatement} instance.
      *
      * @param ms         mapped statement
-     * @param boundSql   bounded SQL
+     * @param boundSql   bound SQL
      * @param resultMaps result maps
      * @param suffix     suffix for id
      * @return new {@link MappedStatement} instance
