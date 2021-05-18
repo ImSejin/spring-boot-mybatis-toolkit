@@ -15,26 +15,28 @@ public interface AuthorMapper {
             "WHERE 1 " +
 
             "<if test='query.name != null'> " +
-            "AND NAME LIKE CONCAT('%', TRIM(#{query.name}), '%') " +
+            "   AND NAME LIKE CONCAT('%', TRIM(#{query.name}), '%') " +
             "</if> " +
 
             "<if test='query.country != null'> " +
-            "AND COUNTRY = #{query.country} " +
+            "   AND COUNTRY = #{query.country} " +
             "</if> " +
 
             "<if test='query.startDate != null'> " +
-            "AND BIRTHDATE &gt; #{query.startDate} " +
+            "   AND BIRTHDATE &gt; #{query.startDate} " +
             "</if> " +
 
             "<if test='query.endDate != null'> " +
-            "AND BIRTHDATE &lt; #{query.endDate} " +
+            "   AND BIRTHDATE &lt; #{query.endDate} " +
             "</if> " +
 
-            "<bind name='items' value='query.number.split(\",\")' /> " +
-            "OR ID IN " +
-            "<foreach item='item' collection='items' open='(' separator=',' close=')'> " +
-            "#{item} " +
-            "</foreach> " +
+            "<if test='query.number != null'> " +
+            "   <bind name='items' value='query.number.split(\",\")' /> " +
+            "   OR ID IN " +
+            "   <foreach item='item' collection='items' open='(' separator=',' close=')'> " +
+            "       #{item} " +
+            "   </foreach> " +
+            "</if> " +
 
             "</script>")
     Paginator<Author> selectAll(Pageable pageable);
