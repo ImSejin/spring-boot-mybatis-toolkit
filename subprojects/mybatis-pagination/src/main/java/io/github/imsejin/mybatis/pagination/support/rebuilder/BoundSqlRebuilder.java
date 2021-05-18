@@ -51,6 +51,9 @@ public class BoundSqlRebuilder implements Rebuilder<BoundSql> {
 
     @Override
     public BoundSql rebuild() {
+        // Sets options from original bound SQL.
+        if (this.parameterMappings == null) this.parameterMappings = this.boundSql.getParameterMappings();
+
         // Converts the parameter type of mapper method to "java.util.Map".
         if (this.rebuildMode == RebuildMode.WRAP && this.mapperParameterType == MapperParameterType.SINGLE) {
             this.parameterObject = wrap();
@@ -60,8 +63,8 @@ public class BoundSqlRebuilder implements Rebuilder<BoundSql> {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> wrap() {
-        Map<String, Object> wrapped = null;
+    private Object wrap() {
+        Object parameterObject = this.parameterObject;
 
         // Checks if additional parameters exist.
         Map<String, Object> additionalParameterMap = getAdditionalParameters();
@@ -75,7 +78,7 @@ public class BoundSqlRebuilder implements Rebuilder<BoundSql> {
                 case SINGLE:
                     System.out.println("MapperParameterType.SINGLE");
                     // Merges the additional parameters with query of PageRequest.
-                    Pageable pageable = (Pageable) this.parameterObject;
+                    Pageable pageable = (Pageable) parameterObject;
 
                     if (pageable instanceof PageRequest) {
                         PageRequest pageRequest = (PageRequest) pageable;
@@ -85,26 +88,25 @@ public class BoundSqlRebuilder implements Rebuilder<BoundSql> {
                         param.forEach(this.boundSql::setAdditionalParameter);
 
                         // Substitutes a merged map for parameter object.
-                        wrapped = param;
+                        return param;
                     }
                     break;
 
                 case MULTIPLE:
                     System.out.println("MapperParameterType.MULTIPLE");
                     // Merges the additional parameters with a instance of ParamMap.
-                    Map<String, Object> param = (MapperMethod.ParamMap<Object>) this.parameterObject;
+                    Map<String, Object> param = (MapperMethod.ParamMap<Object>) parameterObject;
                     param.putAll(additionalParameterMap);
 
                     // Substitutes a merged map for parameter object.
-                    wrapped = param;
-                    break;
+                    return param;
 
                 default:
-                    throw new TypeException("Failed to find the number of parameters: " + this.parameterObject);
+                    throw new TypeException("Failed to find the number of parameters: " + parameterObject);
             }
         }
 
-        return wrapped;
+        return parameterObject;
     }
 
     private Map<String, Object> getAdditionalParameters() {

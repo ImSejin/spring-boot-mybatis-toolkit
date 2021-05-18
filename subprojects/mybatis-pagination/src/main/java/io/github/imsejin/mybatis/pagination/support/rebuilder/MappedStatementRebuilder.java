@@ -82,7 +82,8 @@ public class MappedStatementRebuilder implements Rebuilder<MappedStatement> {
         if (this.rebuildMode == RebuildMode.WRAP && this.mapperParameterType == MapperParameterType.SINGLE) {
             Configuration config = this.ms.getConfiguration();
             List<ParameterMapping> parameterMappings = this.ms.getParameterMap().getParameterMappings();
-            this.parameterMap = new ParameterMap.Builder(config, "", Map.class, parameterMappings).build();
+            // ParameterMap's id must be equal to its MappedStatement's id.
+            this.parameterMap = new ParameterMap.Builder(config, id, Map.class, parameterMappings).build();
         }
 
         return new MappedStatement.Builder(ms.getConfiguration(), id, this.sqlSource, ms.getSqlCommandType())
