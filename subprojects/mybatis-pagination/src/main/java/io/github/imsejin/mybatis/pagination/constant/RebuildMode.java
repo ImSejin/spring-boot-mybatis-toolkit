@@ -1,5 +1,6 @@
 package io.github.imsejin.mybatis.pagination.constant;
 
+import io.github.imsejin.mybatis.pagination.support.rebuilder.Rebuilder;
 import org.apache.ibatis.executor.BaseExecutor;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
@@ -20,6 +21,11 @@ import org.apache.ibatis.session.RowBounds;
 
 import java.util.Map;
 
+/**
+ * Mode for rebuilder.
+ *
+ * @see Rebuilder#rebuild()
+ */
 public enum RebuildMode {
 
     /**
@@ -28,7 +34,7 @@ public enum RebuildMode {
     COPY,
 
     /**
-     * Mode for wrapping parameter of mapper method as {@link Map}.
+     * Mode for copy parameter of mapper method as {@link Map}.
      *
      * <p> When query has additional parameter(e.g. {@code <foreach />, <bind />, ...}) and
      * the parameter type of mapper method is {@link MapperParameterType#SINGLE},

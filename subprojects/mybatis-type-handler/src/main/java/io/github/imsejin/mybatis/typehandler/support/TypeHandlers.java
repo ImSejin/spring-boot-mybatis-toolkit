@@ -33,11 +33,37 @@ public class TypeHandlers {
         private TypeHandlerBuilder() {
         }
 
-        public TypeHandlerBuilder add(Class<?> type, TypeHandler<?> typeHandler) {
+        /**
+         * Adds a type handler.
+         *
+         * <pre><code>
+         *     TypeHandlers typeHandlers = TypeHandlers.builder()
+         *             .add(new SampleTypeHandler())
+         *             .build();
+         * </code></pre>
+         *
+         * @param typeHandler type handler
+         * @return this builder
+         */
+        public TypeHandlerBuilder add(TypeHandler<?> typeHandler) {
+            Class<?> type = TypeResolver.resolveRawArguments(TypeHandler.class, typeHandler.getClass())[0];
             this.typeHandlerMap.put(type, typeHandler);
             return this;
         }
 
+        /**
+         * Adds a type handler with in/out functions.
+         *
+         * <pre><code>
+         *     TypeHandlers typeHandlers = TypeHandlers.builder()
+         *             .add(UUID::toString, UUID::fromString)
+         *             .build();
+         * </code></pre>
+         *
+         * @param input  to string function
+         * @param output to model function
+         * @return this builder
+         */
         @SuppressWarnings("unchecked")
         public <T> TypeHandlerBuilder add(Function<T, String> input, Function<String, T> output) {
             Class<T> type = (Class<T>) TypeResolver.resolveRawArguments(Function.class, input.getClass())[0];
@@ -45,6 +71,23 @@ public class TypeHandlers {
             return this;
         }
 
+        /**
+         * Adds type handlers.
+         *
+         * <pre><code>
+         *     String basePackage = "io.github.imsejin.mybatis.example";
+         *
+         *     DynamicCodeEnumTypeHandlerAutoConfigurer configurer
+         *         = new DynamicCodeEnumTypeHandlerAutoConfigurer(basePackage);
+         *
+         *     TypeHandlers typeHandlers = TypeHandlers.builder()
+         *             .add(configurer.findTypeHandlers())
+         *             .build();
+         * </code></pre>
+         *
+         * @param typeHandlerMap type handler map
+         * @return this builder
+         */
         public TypeHandlerBuilder add(Map<Class<?>, TypeHandler<?>> typeHandlerMap) {
             this.typeHandlerMap.putAll(typeHandlerMap);
             return this;

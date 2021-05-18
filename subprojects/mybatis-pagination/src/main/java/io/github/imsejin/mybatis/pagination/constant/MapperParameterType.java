@@ -1,6 +1,7 @@
 package io.github.imsejin.mybatis.pagination.constant;
 
 import io.github.imsejin.mybatis.pagination.support.InterceptorSupport;
+import io.github.imsejin.mybatis.pagination.support.rebuilder.Rebuilder;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.mapping.BoundSql;
@@ -10,6 +11,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 
+/**
+ * Parameter type of mapper method.
+ *
+ * @see Rebuilder#rebuild()
+ */
 public enum MapperParameterType {
 
     /**
