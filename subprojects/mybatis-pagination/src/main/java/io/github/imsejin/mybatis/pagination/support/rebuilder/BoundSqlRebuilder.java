@@ -76,7 +76,6 @@ public class BoundSqlRebuilder implements Rebuilder<BoundSql> {
                     return null;
 
                 case SINGLE:
-                    System.out.println("MapperParameterType.SINGLE");
                     // Merges the additional parameters with query of PageRequest.
                     Pageable pageable = (Pageable) parameterObject;
 
@@ -93,7 +92,6 @@ public class BoundSqlRebuilder implements Rebuilder<BoundSql> {
                     break;
 
                 case MULTIPLE:
-                    System.out.println("MapperParameterType.MULTIPLE");
                     // Merges the additional parameters with a instance of ParamMap.
                     Map<String, Object> param = (MapperMethod.ParamMap<Object>) parameterObject;
                     param.putAll(additionalParameterMap);
