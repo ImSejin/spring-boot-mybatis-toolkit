@@ -7,6 +7,7 @@ import org.apache.ibatis.session.Configuration;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @see RebuildMode#WRAP
@@ -17,7 +18,6 @@ public class MappedStatementRebuilder implements Rebuilder<MappedStatement> {
     private final RebuildMode rebuildMode;
     private final MapperParameterType mapperParameterType;
     private SqlSource sqlSource;
-    private String id;
     private String suffix;
     private ParameterMap parameterMap;
     private List<ResultMap> resultMaps;
@@ -30,11 +30,6 @@ public class MappedStatementRebuilder implements Rebuilder<MappedStatement> {
 
     public MappedStatementRebuilder sqlSource(SqlSource sqlSource) {
         this.sqlSource = sqlSource;
-        return this;
-    }
-
-    public MappedStatementRebuilder id(String id) {
-        this.id = id;
         return this;
     }
 
@@ -64,13 +59,12 @@ public class MappedStatementRebuilder implements Rebuilder<MappedStatement> {
 
     @Override
     public MappedStatement rebuild() {
-        String id;
-        if (this.id == null && this.suffix == null) {
-            id = ms.getId();
-        } else if (this.id == null) {
-            id = ms.getId() + '$' + this.suffix;
+        String id = this.ms.getId();
+        if (this.suffix != null) {
+            id += '$' + this.suffix;
         } else {
-            id = this.id + '$' + this.suffix;
+            String randomValue = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+            id += "$MyBatis$" + randomValue;
         }
 
         // Sets options from original mapped statement.
