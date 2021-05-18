@@ -91,7 +91,7 @@ public class DynamicCodeEnumTypeHandlerAutoConfigurer {
 
             // 기본 생성자로 동적 타입의 인스턴스를 생성한다.
             Constructor<? extends CodeEnumTypeHandler> constructor = dynamicType.getConstructor();
-            TypeHandler<?> dynamicTypeHandler = constructor.newInstance();
+            CodeEnumTypeHandler<?> dynamicTypeHandler = constructor.newInstance();
 
             typeHandlerMap.put(type, dynamicTypeHandler);
         }
