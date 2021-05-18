@@ -1,7 +1,7 @@
 package io.github.imsejin.mybatis.example.core.database.mybatis.config;
 
 import io.github.imsejin.mybatis.example.Application;
-import io.github.imsejin.mybatis.typehandler.config.DynamicCodeEnumTypeHandlerAutoConfigurer;
+import io.github.imsejin.mybatis.typehandler.finder.DynamicCodeEnumTypeHandlerFinder;
 import io.github.imsejin.mybatis.typehandler.support.TypeHandlers;
 import org.reflections.Reflections;
 import org.springframework.context.annotation.Bean;
@@ -20,9 +20,9 @@ public class DynamicCodeEnumTypeHandlerAutoConfig {
     @Bean
     @Primary
     TypeHandlers.TypeHandlerBuilder typeHandlerBuilder(Reflections reflections) throws ReflectiveOperationException {
-        DynamicCodeEnumTypeHandlerAutoConfigurer configurer = new DynamicCodeEnumTypeHandlerAutoConfigurer(reflections);
+        DynamicCodeEnumTypeHandlerFinder finder = new DynamicCodeEnumTypeHandlerFinder(reflections);
 
-        return TypeHandlers.builder().add(configurer.findTypeHandlers());
+        return TypeHandlers.builder().add(finder.findTypeHandlers());
     }
 
 }

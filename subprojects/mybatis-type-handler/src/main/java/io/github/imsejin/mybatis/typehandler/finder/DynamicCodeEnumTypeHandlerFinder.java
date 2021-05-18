@@ -1,6 +1,6 @@
-package io.github.imsejin.mybatis.typehandler.config;
+package io.github.imsejin.mybatis.typehandler.finder;
 
-import io.github.imsejin.mybatis.typehandler.CodeEnumTypeHandler;
+import io.github.imsejin.mybatis.typehandler.handler.CodeEnumTypeHandler;
 import io.github.imsejin.mybatis.typehandler.model.CodeEnum;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.modifier.Visibility;
@@ -11,6 +11,7 @@ import org.reflections.Reflections;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -50,20 +51,20 @@ import java.util.Set;
  * @see ByteBuddy
  */
 @SuppressWarnings("rawtypes")
-public class DynamicCodeEnumTypeHandlerAutoConfigurer {
+public class DynamicCodeEnumTypeHandlerFinder {
 
     private final Reflections reflections;
 
-    public DynamicCodeEnumTypeHandlerAutoConfigurer(Class<?> basePackageClass) {
+    public DynamicCodeEnumTypeHandlerFinder(Class<?> basePackageClass) {
         this(basePackageClass.getPackage().getName());
     }
 
-    public DynamicCodeEnumTypeHandlerAutoConfigurer(String basePackage) {
-        this(new Reflections(basePackage));
+    public DynamicCodeEnumTypeHandlerFinder(String basePackage) {
+        this(new Reflections(Objects.requireNonNull(basePackage, "Base package should not be null")));
     }
 
-    public DynamicCodeEnumTypeHandlerAutoConfigurer(Reflections reflections) {
-        this.reflections = reflections;
+    public DynamicCodeEnumTypeHandlerFinder(Reflections reflections) {
+        this.reflections = Objects.requireNonNull(reflections, "Reflections should not be null");
     }
 
     public Map<Class<?>, TypeHandler<?>> findTypeHandlers() throws ReflectiveOperationException {

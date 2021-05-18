@@ -76,12 +76,10 @@ public class TypeHandlers {
          *
          * <pre><code>
          *     String basePackage = "io.github.imsejin.mybatis.example";
-         *
-         *     DynamicCodeEnumTypeHandlerAutoConfigurer configurer
-         *         = new DynamicCodeEnumTypeHandlerAutoConfigurer(basePackage);
+         *     DynamicCodeEnumTypeHandlerFinder finder = new DynamicCodeEnumTypeHandlerFinder(basePackage);
          *
          *     TypeHandlers typeHandlers = TypeHandlers.builder()
-         *             .add(configurer.findTypeHandlers())
+         *             .add(finder.findTypeHandlers())
          *             .build();
          * </code></pre>
          *

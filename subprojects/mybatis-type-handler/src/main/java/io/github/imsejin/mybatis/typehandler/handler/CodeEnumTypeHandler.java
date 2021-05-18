@@ -1,6 +1,6 @@
 package io.github.imsejin.mybatis.typehandler;
 
-import io.github.imsejin.mybatis.typehandler.config.DynamicCodeEnumTypeHandlerAutoConfigurer;
+import io.github.imsejin.mybatis.typehandler.finder.DynamicCodeEnumTypeHandlerFinder;
 import io.github.imsejin.mybatis.typehandler.model.CodeEnum;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
@@ -16,7 +16,7 @@ import java.util.Objects;
 /**
  * Adaptor of {@link TypeHandler} resolving implementations of {@link CodeEnum}.
  *
- * @see DynamicCodeEnumTypeHandlerAutoConfigurer
+ * @see DynamicCodeEnumTypeHandlerFinder
  */
 public abstract class CodeEnumTypeHandler<E extends Enum<E>> extends BaseTypeHandler<CodeEnum> {
 
