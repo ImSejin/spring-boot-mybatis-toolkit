@@ -27,7 +27,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         Set<Class<? extends HandlerMethodArgumentResolver>> resolverTypes = reflections
                 .getSubTypesOf(HandlerMethodArgumentResolver.class);
 
-        resolverTypes.forEach(it -> resolvers.add(context.getBean(it)));
+        resolverTypes.stream().map(context::getBean).forEach(resolvers::add);
 
         log.debug("WebMvcConfig registered {} handler method argument resolver(s): {}",
                 resolverTypes.size(), resolverTypes.stream().map(Class::getSimpleName).collect(toList()));
