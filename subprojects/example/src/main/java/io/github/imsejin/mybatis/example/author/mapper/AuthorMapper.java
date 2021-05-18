@@ -15,7 +15,7 @@ public interface AuthorMapper {
             "WHERE 1 " +
 
             "<if test='query.name != null'> " +
-            "AND NAME LIKE CONCAT('%', #{query.name}, '%') " +
+            "AND NAME LIKE CONCAT('%', TRIM(#{query.name}), '%') " +
             "</if> " +
 
             "<if test='query.country != null'> " +
@@ -29,6 +29,12 @@ public interface AuthorMapper {
             "<if test='query.endDate != null'> " +
             "AND BIRTHDATE &lt; #{query.endDate} " +
             "</if> " +
+
+            "<bind name='items' value='query.number.split(\",\")' /> " +
+            "OR ID IN " +
+            "<foreach item='item' collection='items' open='(' separator=',' close=')'> " +
+            "#{item} " +
+            "</foreach> " +
 
             "</script>")
     Paginator<Author> selectAll(Pageable pageable);
