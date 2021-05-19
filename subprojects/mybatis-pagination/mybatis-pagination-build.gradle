@@ -6,3 +6,132 @@ dependencies {
     compileOnly(group: "org.projectlombok", name: "lombok", version: "$versions.lombok")
     annotationProcessor(group: "org.projectlombok", name: "lombok", version: "$versions.lombok")
 }
+
+//java {
+//    withJavadocJar()
+//    withSourcesJar()
+//}
+
+task sourceJar(type: Jar) {
+    classifier("sources")
+    from(sourceSets.main.allJava)
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier("javadoc")
+    from(javadoc.destinationDir)
+}
+
+artifacts {
+    archives(jar)
+    archives(sourceJar)
+    archives(javadocJar)
+}
+
+signing {
+    useGpgCmd() // Using gpg-agent. (https://gnupg.org)
+    sign(configurations.archives)
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            customizePom(pom)
+            groupId = project.group
+            artifactId = project.name
+
+            from components.java
+
+            // create the sign pom artifact
+            pom.withXml {
+                def pomFile = file("${project.buildDir}/generated-pom.xml")
+                writeTo(pomFile)
+                def pomAscFile = signing.sign(pomFile).signatureFiles[0]
+                artifact(pomAscFile) {
+                    classifier = null
+                    extension = 'pom.asc'
+                }
+            }
+
+            artifact(sourceJar) {
+                classifier = "sources"
+            }
+            artifact(javadocJar) {
+                classifier = "javadoc"
+            }
+
+            // create the signed artifacts
+            project.tasks.signArchives.signatureFiles.each {
+                artifact(it) {
+                    def matcher = it.file =~ /-(sources|javadoc)\.jar\.asc$/
+                    if (matcher.find()) {
+                        classifier = matcher.group(1)
+                    } else {
+                        classifier = null
+                    }
+                    extension = 'jar.asc'
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "MavenCentral"
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+            url = uri(version.toString().endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl)
+            credentials {
+                // Refers them from "~/.gradle/gradle.properties".
+                username = findProperty("sonatype.username")
+                password = findProperty("sonatype.password")
+            }
+        }
+    }
+}
+
+def customizePom(pom) {
+    pom.withXml {
+        def root = asNode()
+
+        // Removes test-scoped dependencies (no need in maven central POMs).
+        root.dependencies.removeAll { dep ->
+            dep.scope == "test"
+        }
+
+        // add all items necessary for maven central publication
+        root.children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
+
+            name "MyBatis Pagination"
+            description = "MyBatis pagination for integration with Spring Boot"
+            url "https://github.com/ImSejin/spring-boot-mybatis-toolkit/tree/main/subprojects/mybatis-pagination"
+            organization {
+                name "com.github.imsejin"
+                url "https://github.com/imsejin"
+            }
+            issueManagement {
+                system "GitHub"
+                url "https://github.com/ImSejin/spring-boot-mybatis-toolkit/issues"
+            }
+            licenses {
+                license {
+                    name "MIT License"
+                    url "https://github.com/ImSejin/spring-boot-mybatis-toolkit/blob/main/LICENSE"
+                    distribution "repo"
+                }
+            }
+            scm {
+                url "https://github.com/ImSejin/spring-boot-mybatis-toolkit"
+                connection "scm:git:git://github.com/ImSejin/spring-boot-mybatis-toolkit.git"
+                developerConnection "scm:git:ssh://git@github.com:ImSejin/spring-boot-mybatis-toolkit.git"
+            }
+            developers {
+                developer {
+                    name "Im Sejin"
+                    email "hackeres123@gmail.com"
+                }
+            }
+        }
+    }
+}
