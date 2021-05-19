@@ -1,0 +1,84 @@
+import java.nio.charset.StandardCharsets
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+javadoc {
+    options.encoding = StandardCharsets.UTF_8
+    options.addStringOption("Xdoclint:none", "-quiet") // For generated methods by lombok.
+}
+
+publishing {
+    publications {
+        // Creates a Maven publication called "mavenJava".
+        mavenJava(MavenPublication) {
+            pom {
+                name = ""
+                description = ""
+                url = "https://github.com/ImSejin/spring-boot-mybatis-toolkit/tree/main/subprojects/$project.name"
+
+                organization {
+                    name = "io.github.imsejin"
+                    url = "https://github.com/ImSejin"
+                }
+
+                issueManagement {
+                    system = "GitHub"
+                    url = "https://github.com/ImSejin/spring-boot-mybatis-toolkit/issues"
+                }
+
+                licenses {
+                    license {
+                        name = "MIT License"
+                        url = "https://github.com/ImSejin/spring-boot-mybatis-toolkit/blob/main/LICENSE"
+                        distribution = "repo"
+                    }
+                }
+
+                scm {
+                    url = "https://github.com/ImSejin/spring-boot-mybatis-toolkit"
+                    connection = "scm:git:git://github.com/ImSejin/spring-boot-mybatis-toolkit.git"
+                    developerConnection = "scm:git:ssh://git@github.com:ImSejin/spring-boot-mybatis-toolkit.git"
+                }
+
+                developers {
+                    developer {
+                        name = "Im Sejin"
+                        email = "hackeres123@gmail.com"
+                    }
+                }
+            }
+
+            // Publishes additionally jar, module, javadoc, sources.
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            name = "MavenCentral"
+
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+            url = uri(version.toString().endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl)
+
+            credentials {
+                // Refers them from "~/.gradle/gradle.properties".
+                username = findProperty("sonatype.username")
+                password = findProperty("sonatype.password")
+            }
+        }
+    }
+}
+
+signing {
+    required {
+        !project.version.endsWith("SNAPSHOT") && gradle.taskGraph.hasTask("publish")
+    }
+
+    sign(configurations.archives)
+    sign(publishing.publications)
+    // useGpgCmd() // Using gpg-agent. (https://gnupg.org)
+}
