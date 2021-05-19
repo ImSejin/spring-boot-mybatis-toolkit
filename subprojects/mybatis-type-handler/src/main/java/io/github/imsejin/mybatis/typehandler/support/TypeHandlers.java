@@ -67,7 +67,7 @@ public class TypeHandlers {
         @SuppressWarnings("unchecked")
         public <T> TypeHandlerBuilder add(Function<T, String> input, Function<String, T> output) {
             Class<T> type = (Class<T>) TypeResolver.resolveRawArguments(Function.class, input.getClass())[0];
-            this.typeHandlerMap.put(type, TypeHandlerSupport.make(type, input, output));
+            this.typeHandlerMap.put(type, TypeHandlerFactory.create(type, input, output));
             return this;
         }
 

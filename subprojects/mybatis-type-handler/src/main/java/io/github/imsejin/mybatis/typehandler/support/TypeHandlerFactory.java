@@ -13,14 +13,14 @@ import java.util.function.Function;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
-public final class TypeHandlerSupport {
+public class TypeHandlerFactory {
 
-    private TypeHandlerSupport() {
+    private TypeHandlerFactory() {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> BaseTypeHandler<T> make(Class<T> type, Function<T, String> input, Function<String, T> output) {
-        ClassLoader classLoader = TypeHandlerSupport.class.getClassLoader();
+    public static <T> BaseTypeHandler<T> create(Class<T> type, Function<T, String> input, Function<String, T> output) {
+        ClassLoader classLoader = TypeHandlerFactory.class.getClassLoader();
 
         // Creates BaseTypeHandler<T> as a type.
         TypeDescription.Generic baseTypeHandler = TypeDescription.Generic.Builder.parameterizedType(BaseTypeHandler.class, type)
