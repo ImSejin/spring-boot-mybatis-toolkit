@@ -1,4 +1,28 @@
-package io.github.imsejin.mybatis.typehandler.finder;
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 Im Sejin
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+package io.github.imsejin.mybatis.typehandler.support;
 
 import io.github.imsejin.mybatis.typehandler.handler.CodeEnumTypeHandler;
 import io.github.imsejin.mybatis.typehandler.model.CodeEnum;
@@ -9,10 +33,7 @@ import org.apache.ibatis.type.TypeHandler;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * {@link CodeEnum}의 모든 구현체를 찾아, {@link CodeEnumTypeHandler}를 상속하는
@@ -50,24 +71,56 @@ import java.util.Set;
  * @see Reflections
  * @see ByteBuddy
  */
-@SuppressWarnings("rawtypes")
-public class DynamicCodeEnumTypeHandlerFinder {
+@SuppressWarnings({"rawtypes", "unchecked"})
+public class DynamicCodeEnumTypeHandlerGenerator {
 
     private final Reflections reflections;
 
-    public DynamicCodeEnumTypeHandlerFinder(Class<?> basePackageClass) {
+    public DynamicCodeEnumTypeHandlerGenerator(Class<?> basePackageClass) {
         this(basePackageClass.getPackage().getName());
     }
 
-    public DynamicCodeEnumTypeHandlerFinder(String basePackage) {
+    public DynamicCodeEnumTypeHandlerGenerator(String basePackage) {
         this(new Reflections(Objects.requireNonNull(basePackage, "Base package should not be null")));
     }
 
-    public DynamicCodeEnumTypeHandlerFinder(Reflections reflections) {
+    public DynamicCodeEnumTypeHandlerGenerator(Reflections reflections) {
         this.reflections = Objects.requireNonNull(reflections, "Reflections should not be null");
     }
 
-    public Map<Class<?>, TypeHandler<?>> findTypeHandlers() throws ReflectiveOperationException {
+    /**
+     * Finds all subclasses of {@link CodeEnumTypeHandler} and instantiates them.
+     *
+     * @return all subclasses of {@link CodeEnumTypeHandler}
+     * @throws ReflectiveOperationException if failed to instantiate class
+     */
+    public Map<Class<?>, TypeHandler<?>> generateAll() throws ReflectiveOperationException {
+        return generate0(Policy.INCLUDE);
+    }
+
+    /**
+     * Finds some subclasses of {@link CodeEnumTypeHandler} and instantiates them.
+     *
+     * <pre><code>
+     *     generate(Policy.INCLUDE);                    // none of A, B and C
+     *     generate(Policy.INCLUDE, A.class, B.class);  // A and B of A, B and C
+     *     generate(Policy.EXCLUDE);                    // all
+     *     generate(Policy.EXCLUDE, A.class, B.class);  // C of A, B and C
+     * </code></pre>
+     *
+     * @param policy  choice policy
+     * @param classes which classes are chosen?
+     * @return some subclasses of {@link CodeEnumTypeHandler}
+     * @throws ReflectiveOperationException if failed to instantiate class
+     */
+    public <T extends Enum & CodeEnum> Map<Class<?>, TypeHandler<?>> generate(Policy policy, Class<T>... classes)
+            throws ReflectiveOperationException {
+        if (policy == Policy.INCLUDE && classes.length == 0) return Collections.emptyMap();
+        return generate0(policy, classes);
+    }
+
+    private <T extends Enum & CodeEnum> Map<Class<?>, TypeHandler<?>> generate0(Policy policy, Class<T>... classes)
+            throws ReflectiveOperationException {
         Set<Class<? extends CodeEnum>> subclasses = this.reflections.getSubTypesOf(CodeEnum.class);
 
         // "java.lang.Class"를 파라미터로 갖는 "CodeEnumTypeHandler"의 생성자.
@@ -76,6 +129,7 @@ public class DynamicCodeEnumTypeHandlerFinder {
 
         ClassLoader classLoader = getClass().getClassLoader();
 
+        List<Class<T>> classList = Arrays.asList(classes);
         Map<Class<?>, TypeHandler<?>> typeHandlerMap = new HashMap<>();
         for (Class<? extends CodeEnum> type : subclasses) {
             /*
@@ -84,6 +138,9 @@ public class DynamicCodeEnumTypeHandlerFinder {
              * 이런 타입으로 "CodeEnumTypeHandler"를 생성할 수 없다.
              */
             if (!Enum.class.isAssignableFrom(type) || type.isAnonymousClass()) continue;
+
+            if (policy == Policy.INCLUDE && !classList.contains(type)) continue;
+            else if (policy == Policy.EXCLUDE && classList.contains(type)) continue;
 
             // 'CodeEnumTypeHandler'를 상속하는 동적 타입을 생성한다.
             Class<? extends CodeEnumTypeHandler> dynamicType = new ByteBuddy().subclass(superType)
@@ -98,6 +155,10 @@ public class DynamicCodeEnumTypeHandlerFinder {
         }
 
         return typeHandlerMap;
+    }
+
+    public enum Policy {
+        INCLUDE, EXCLUDE
     }
 
 }
