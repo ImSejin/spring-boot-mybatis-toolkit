@@ -9,3 +9,18 @@ dependencies {
     // Finder for generic types.
     implementation(group: "net.jodah", name: "typetools", version: "$versions.typetools")
 }
+
+version = "0.1.0"
+
+// Override base publish script.
+apply(from: "$rootDir/publish.gradle")
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = "MyBatis Type Handler"
+                description = "MyBatis type handler for integration with Spring Boot"
+            }
+        }
+    }
+}

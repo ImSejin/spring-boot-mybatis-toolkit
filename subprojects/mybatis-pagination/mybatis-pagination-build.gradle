@@ -1,5 +1,3 @@
-import java.nio.charset.StandardCharsets
-
 dependencies {
     api(group: "com.github.jsqlparser", name: "jsqlparser", version: "$versions.jsqlparser")
     implementation(group: "org.mybatis", name: "mybatis", version: "$versions.mybatis")
@@ -9,85 +7,17 @@ dependencies {
     annotationProcessor(group: "org.projectlombok", name: "lombok", version: "$versions.lombok")
 }
 
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
+version = "0.1.0"
 
-javadoc {
-    options.encoding = StandardCharsets.UTF_8
-    options.addStringOption("Xdoclint:none", "-quiet")
-}
-
+// Override base publish script.
+apply(from: "$rootDir/publish.gradle")
 publishing {
     publications {
-        // Creates a Maven publication called "mavenJava".
         mavenJava(MavenPublication) {
             pom {
                 name = "MyBatis Pagination"
                 description = "MyBatis pagination for integration with Spring Boot"
-                url = "https://github.com/ImSejin/spring-boot-mybatis-toolkit/tree/main/subprojects/mybatis-pagination"
-
-                organization {
-                    name = "io.github.imsejin"
-                    url = "https://github.com/ImSejin"
-                }
-
-                issueManagement {
-                    system = "GitHub"
-                    url = "https://github.com/ImSejin/spring-boot-mybatis-toolkit/issues"
-                }
-
-                licenses {
-                    license {
-                        name = "MIT License"
-                        url = "https://github.com/ImSejin/spring-boot-mybatis-toolkit/blob/main/LICENSE"
-                        distribution = "repo"
-                    }
-                }
-
-                scm {
-                    url = "https://github.com/ImSejin/spring-boot-mybatis-toolkit"
-                    connection = "scm:git:git://github.com/ImSejin/spring-boot-mybatis-toolkit.git"
-                    developerConnection = "scm:git:ssh://git@github.com:ImSejin/spring-boot-mybatis-toolkit.git"
-                }
-
-                developers {
-                    developer {
-                        name = "Im Sejin"
-                        email = "hackeres123@gmail.com"
-                    }
-                }
-            }
-
-            // Publishes additionally jar, module, javadoc, sources.
-            from components.java
-        }
-    }
-
-    repositories {
-        maven {
-            name = "MavenCentral"
-
-            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
-            url = uri(version.toString().endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl)
-
-            credentials {
-                // Refers them from "~/.gradle/gradle.properties".
-                username = findProperty("sonatype.username")
-                password = findProperty("sonatype.password")
             }
         }
     }
-}
-
-signing {
-    required {
-        !project.version.endsWith("SNAPSHOT") && gradle.taskGraph.hasTask("publish")
-    }
-
-    sign(configurations.archives)
-    sign(publishing.publications)
-    // useGpgCmd() // Using gpg-agent. (https://gnupg.org)
 }
