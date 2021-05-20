@@ -23,7 +23,6 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
 
@@ -49,7 +48,7 @@ public class DatabaseConfig {
 
     @Primary
     @Bean("sqlSessionFactory")
-    SqlSessionFactory sqlSessionFactory(DataSource dataSource, TypeHandlers.TypeHandlerBuilder builder) throws Exception {
+    SqlSessionFactory sqlSessionFactory(DataSource dataSource, TypeHandlers typeHandlers) throws Exception {
         SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
 
         /*
@@ -63,7 +62,7 @@ public class DatabaseConfig {
         factoryBean.setConfiguration(configuration);
 
         // Registers type handlers.
-        Map<Class<?>, TypeHandler<?>> typeHandlerMap = newTypeHandlerMap(builder);
+        Map<Class<?>, TypeHandler<?>> typeHandlerMap = typeHandlers.get();
         factoryBean.setTypeHandlers(typeHandlerMap.values().toArray(new TypeHandler[0]));
         log.debug("SqlSessionFactory registered {} type handler(s): {}", typeHandlerMap.size(),
                 typeHandlerMap.keySet().stream().map(Class::getSimpleName).collect(toList()));
@@ -75,13 +74,6 @@ public class DatabaseConfig {
                 interceptors.stream().map(it -> it.getClass().getSimpleName()).collect(toList()));
 
         return factoryBean.getObject();
-    }
-
-    private Map<Class<?>, TypeHandler<?>> newTypeHandlerMap(TypeHandlers.TypeHandlerBuilder builder) {
-        // java.util.UUID
-        builder.add(UUID::toString, UUID::fromString);
-
-        return builder.build().get();
     }
 
 }

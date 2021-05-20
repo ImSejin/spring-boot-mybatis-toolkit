@@ -8,8 +8,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
+import java.util.UUID;
+
 @Configuration
-public class DynamicCodeEnumTypeHandlerAutoConfig {
+public class TypeHandlersAutoConfig {
 
     @Bean
     @Primary
@@ -19,10 +21,13 @@ public class DynamicCodeEnumTypeHandlerAutoConfig {
 
     @Bean
     @Primary
-    TypeHandlers.TypeHandlerBuilder typeHandlerBuilder(Reflections reflections) throws ReflectiveOperationException {
+    TypeHandlers typeHandlers(Reflections reflections) throws ReflectiveOperationException {
         DynamicCodeEnumTypeHandlerGenerator generator = new DynamicCodeEnumTypeHandlerGenerator(reflections);
 
-        return TypeHandlers.builder().add(generator.generateAll());
+        return TypeHandlers.builder()
+                .add(generator.generateAll()) // io.github.imsejin.mybatis.typehandler.model.CodeEnum
+                .add(UUID::toString, UUID::fromString) // java.util.UUID
+                .build();
     }
 
 }
