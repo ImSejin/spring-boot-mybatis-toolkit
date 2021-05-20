@@ -10,6 +10,7 @@ import net.sf.jsqlparser.statement.select.*;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.session.Configuration;
+import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -63,7 +64,7 @@ public class MySQLDialect implements Dialect {
         // Removes parameter mappings in select statement.
         int selelctOccurrences = 0;
         for (SelectItem selectItem : select.getSelectItems()) {
-            selelctOccurrences += countOccurrencesOf(selectItem.toString(), "?");
+            selelctOccurrences += StringUtils.countOccurrencesOf(selectItem.toString(), "?");
         }
         for (int i = 0; i < selelctOccurrences; i++) {
             mappings[i] = null;
@@ -74,7 +75,7 @@ public class MySQLDialect implements Dialect {
         // Removes parameter mappings in offset statement.
         if (select.getOffset() != null) {
             int lastIndex = (mappings.length - 1) - otherOccurrences;
-            int occurrences = countOccurrencesOf(select.getLimit().toString(), "?");
+            int occurrences = StringUtils.countOccurrencesOf(select.getLimit().toString(), "?");
             otherOccurrences += occurrences;
 
             for (int i = lastIndex; i > lastIndex - occurrences && i >= selelctOccurrences; i--) {
@@ -85,7 +86,7 @@ public class MySQLDialect implements Dialect {
         // Removes parameter mappings in limit statement.
         if (select.getLimit() != null) {
             int lastIndex = (mappings.length - 1) - otherOccurrences;
-            int occurrences = countOccurrencesOf(select.getLimit().toString(), "?");
+            int occurrences = StringUtils.countOccurrencesOf(select.getLimit().toString(), "?");
             otherOccurrences += occurrences;
 
             for (int i = lastIndex; i > lastIndex - occurrences && i >= selelctOccurrences; i--) {
@@ -98,7 +99,7 @@ public class MySQLDialect implements Dialect {
             int lastIndex = (mappings.length - 1) - otherOccurrences;
             int occurrences = 0;
             for (OrderByElement orderByElement : select.getOrderByElements()) {
-                occurrences += countOccurrencesOf(orderByElement.toString(), "?");
+                occurrences += StringUtils.countOccurrencesOf(orderByElement.toString(), "?");
             }
 
             for (int i = lastIndex; i > lastIndex - occurrences && i >= selelctOccurrences; i--) {
@@ -107,19 +108,6 @@ public class MySQLDialect implements Dialect {
         }
 
         return Arrays.stream(mappings).filter(Objects::nonNull).collect(toList());
-    }
-
-    private static int countOccurrencesOf(String str, String sub) {
-        if (str == null || str.isEmpty() || sub == null || sub.isEmpty()) return 0;
-
-        int count = 0;
-        int pos = 0;
-        int idx;
-        while ((idx = str.indexOf(sub, pos)) != -1) {
-            ++count;
-            pos = idx + sub.length();
-        }
-        return count;
     }
 
 }

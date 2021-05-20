@@ -33,7 +33,7 @@ public class Paginator<T> implements List<T> {
     private final PageInfo pageInfo;
 
     public Paginator(List<T> items, PageInfo pageInfo) {
-        this.items = items == null ? Collections.emptyList() : items;
+        this.items = items == null ? Collections.emptyList() : Collections.unmodifiableList(items);
         this.pageInfo = pageInfo;
     }
 
