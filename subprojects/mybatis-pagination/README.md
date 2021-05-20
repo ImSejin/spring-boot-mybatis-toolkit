@@ -134,7 +134,7 @@ public interface AuthorMapper {
 }
 ```
 
-When request `GET /samples?page=1&size=2&query={"name":"nu","createdAt":"1801-09-19"}`,
+When request `GET /authors?page=1&size=2&query={"name":"nu","createdAt":"1801-09-19"}`,
 
 then you will get the following response.
 
