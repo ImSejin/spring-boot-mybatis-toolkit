@@ -95,7 +95,7 @@ public class DynamicCodeEnumTypeHandlerGenerator {
      * @throws ReflectiveOperationException if failed to instantiate class
      */
     public Map<Class<?>, TypeHandler<?>> generateAll() throws ReflectiveOperationException {
-        return generate0(Policy.INCLUDE);
+        return generate0(null);
     }
 
     /**
