@@ -1,7 +1,9 @@
 
 
 ---
+
 <h3 align="center">MyBatis Pagination</h3>
+
 ---
 
 <p align="center">Pagination feature for integration MyBatis and Spring framework</p>
