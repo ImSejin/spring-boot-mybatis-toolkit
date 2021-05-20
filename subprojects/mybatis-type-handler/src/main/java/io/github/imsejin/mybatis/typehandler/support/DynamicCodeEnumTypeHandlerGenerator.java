@@ -81,11 +81,11 @@ public class DynamicCodeEnumTypeHandlerGenerator {
     }
 
     public DynamicCodeEnumTypeHandlerGenerator(String basePackage) {
-        this(new Reflections(Objects.requireNonNull(basePackage, "Base package should not be null")));
+        this(new Reflections(Objects.requireNonNull(basePackage, "Base package is not allowed to be null")));
     }
 
     public DynamicCodeEnumTypeHandlerGenerator(Reflections reflections) {
-        this.reflections = Objects.requireNonNull(reflections, "Reflections should not be null");
+        this.reflections = Objects.requireNonNull(reflections, "Reflections is not allowed to be null");
     }
 
     /**
@@ -116,7 +116,7 @@ public class DynamicCodeEnumTypeHandlerGenerator {
     public <T extends Enum & CodeEnum> Map<Class<?>, TypeHandler<?>> generate(Policy policy, Class<T>... classes)
             throws ReflectiveOperationException {
         if (policy == Policy.INCLUDE && classes.length == 0) return Collections.emptyMap();
-        return generate0(policy, classes);
+        return generate0(Objects.requireNonNull(policy, "Policy is not allowed to be null"), classes);
     }
 
     private <T extends Enum & CodeEnum> Map<Class<?>, TypeHandler<?>> generate0(Policy policy, Class<T>... classes)
