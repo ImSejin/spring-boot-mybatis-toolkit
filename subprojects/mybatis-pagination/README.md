@@ -128,13 +128,13 @@ public interface AuthorMapper {
     @Select("SELECT * " +
             "FROM AUTHOR " +
             "WHERE NAME LIKE CONCAT('%', #{query.name}, '%') " +
-            "AND BIRTHDATE = #{query.createdAt}")
+            "AND BIRTHDATE = #{query.birthdate}")
     Paginator<Author> selectAuthors(Pageable pageable);
     
 }
 ```
 
-When request `GET /authors?page=1&size=2&query={"name":"nu","createdAt":"1801-09-19"}`,
+When request `GET /authors?page=1&size=2&query={"name":"nu","birthdate":"1801-09-19"}`,
 
 then you will get the following response.
 
