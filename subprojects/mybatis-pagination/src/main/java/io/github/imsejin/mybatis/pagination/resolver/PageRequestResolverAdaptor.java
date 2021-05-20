@@ -1,10 +1,9 @@
-package io.github.imsejin.mybatis.example.core.web;
+package io.github.imsejin.mybatis.pagination.resolver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.imsejin.mybatis.pagination.model.PageRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -15,15 +14,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-@Component
 @RequiredArgsConstructor
-public class PageRequestResolver implements HandlerMethodArgumentResolver {
+public abstract class PageRequestResolverAdaptor implements HandlerMethodArgumentResolver {
 
     private final ObjectMapper objectMapper;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType() == PageRequest.class;
+        return PageRequest.class.isAssignableFrom(parameter.getParameterType());
     }
 
     @Override
