@@ -8,6 +8,7 @@
 <p align="center">Pagination feature for integration MyBatis and Spring framework</p>
 
 <p align="center">
+    <a href="https://lgtm.com/projects/g/ImSejin/spring-boot-mybatis-toolkit/context:java"><img alt="Language grade: Java" src="https://img.shields.io/lgtm/grade/java/g/ImSejin/spring-boot-mybatis-toolkit.svg?logo=lgtm&logoWidth=18"/></a>
     <img alt="Maven Central" src="https://img.shields.io/maven-central/v/io.github.imsejin/mybatis-pagination">
     <img alt="jdk8" src="https://img.shields.io/badge/jdk-8-orange">
 </p>
