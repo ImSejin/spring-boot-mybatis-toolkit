@@ -1,5 +1,4 @@
 
-
 ---
 
 <h3 align="center">MyBatis Pagination</h3>
@@ -106,7 +105,7 @@ public interface AuthorMapper {
 }
 ```
 
-Request `GET /samples?page=1&size=2&query={"name":"nu","createdAt":"1801-09-19"}`,
+When request `GET /samples?page=1&size=2&query={"name":"nu","createdAt":"1801-09-19"}`,
 
 then you will get the following response.
 
