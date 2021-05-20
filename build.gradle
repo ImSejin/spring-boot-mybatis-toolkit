@@ -76,12 +76,3 @@ wrapper {
 jar {
     enabled = true
 }
-
-task deleteGraphicsAssets(type: Delete) {
-    delete file("src").listFiles()
-}
-
-gradle.buildFinished {
-    println("Finished build")
-    // project.buildDir.deleteDir()
-}
