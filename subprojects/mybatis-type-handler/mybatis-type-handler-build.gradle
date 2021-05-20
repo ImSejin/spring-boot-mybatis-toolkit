@@ -1,6 +1,6 @@
 dependencies {
-    implementation(group: "org.mybatis", name: "mybatis", version: "$versions.mybatis")
-    implementation(group: "com.fasterxml.jackson.core", name: "jackson-databind", version: "$versions.jackson")
+    compileOnly(group: "org.mybatis", name: "mybatis", version: "$versions.mybatis")
+    compileOnly(group: "com.fasterxml.jackson.core", name: "jackson-databind", version: "$versions.jackson")
 
     // Finder for types matched a specific condition.
     api(group: "org.reflections", name: "reflections", version: "$versions.reflections")
