@@ -23,8 +23,8 @@ public class TypeHandlerFactory {
         ClassLoader classLoader = TypeHandlerFactory.class.getClassLoader();
 
         // Creates BaseTypeHandler<T> as a type.
-        TypeDescription.Generic baseTypeHandler = TypeDescription.Generic.Builder.parameterizedType(BaseTypeHandler.class, type)
-                .build();
+        TypeDescription.Generic baseTypeHandler = TypeDescription.Generic.Builder
+                .parameterizedType(BaseTypeHandler.class, type).build();
 
         Class<? extends BaseTypeHandler<T>> dynamicType = (Class<? extends BaseTypeHandler<T>>) new ByteBuddy()
                 .subclass(baseTypeHandler)
