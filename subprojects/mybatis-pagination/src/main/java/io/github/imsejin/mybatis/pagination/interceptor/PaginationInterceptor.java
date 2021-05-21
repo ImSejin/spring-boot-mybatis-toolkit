@@ -27,27 +27,50 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * <p> type
+ * MyBatis interceptor for auto pagination
+ * <p>
+ * If you define a mapper method that meets the conditions below,
+ * this executes 2 queries(the total number of items and offset/limit).
+ * These are that conditions.
+ *
+ * <ol>
+ *     <li>Return type is {@link Paginator}?</li>
+ *     <li>Is {@link Pageable} type or its implementation type in the parameters?</li>
+ * </ol>
+ * Only these defined methods will be affected by this interceptor.
+ *
+ * <pre>{@code
+ *     Paginator<T> selectItems(Pageable pageable);
+ * }</pre>
+ * What you should be careful about when writing a query are
+ *
+ * <ol>
+ *     <li>
+ *         <h3>Don't use mapped parameter at comment</h3>
+ *         If you use mapped parameter provided by MyBatis at
+ *         single-line comment(--) or multi-line comment({@literal /}**{@literal /}),
+ *         you'll fail to execute a query. While parsing SQL,
+ *         all comments are removed and An exception occurs because
+ *         unmapped parameters exist in {@link BoundSql#getParameterMappings()}.
+ *     </li>
+ *     <li>
+ *         <h3>Don't need to use the keyword "OFFSET" or "LIMIT" at root query</h3>
+ *         You don't have to insert the keyword because this interceptor will
+ *         automatically insert the keyword and process the pagination.
+ *     </li>
+ * </ol>
+ *
+ * <hr>
+ * You only set these types to {@link Signature#type()}.
  * <ul>
  *     <li>{@link Executor}</li>
  *     <li>{@link ParameterHandler}</li>
  *     <li>{@link ResultSetHandler}</li>
  *     <li>{@link StatementHandler}</li>
  * </ul>
- *
- * <p> {@link Executor#query(MappedStatement, Object, RowBounds, ResultHandler)}
- *
- * <p> Values of {@link Signature#method()}
- * <dl>
- *     <dt>SELECT</dt>
- *     <dd>query</dd>
- *     <dt>INSERT</dt>
- *     <dd>update</dd>
- *     <dt>UPDATE</dt>
- *     <dd>update</dd>
- *     <dt>DELETE</dt>
- *     <dd>update</dd>
- * </dl>
+ * <p>
+ * This interceptor handle this {@link Executor#query(MappedStatement, Object, RowBounds, ResultHandler)}.
+ * That method is invoked on SELECT query.
  */
 @Intercepts({
         @Signature(type = Executor.class, method = "query", args = {

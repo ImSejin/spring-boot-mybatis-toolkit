@@ -48,7 +48,7 @@ public final class InterceptorSupport {
      *
      * <ol>
      *     <li>Return type is {@link Paginator}?</li>
-     *     <li>Has {@link Pageable} type or its implementation type in parameters?</li>
+     *     <li>Is {@link Pageable} type or its implementation type in the parameters?</li>
      * </ol>
      *
      * <pre><code>
