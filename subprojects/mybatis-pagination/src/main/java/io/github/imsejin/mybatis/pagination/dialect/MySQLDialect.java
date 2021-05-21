@@ -10,12 +10,14 @@ import net.sf.jsqlparser.statement.select.*;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.session.Configuration;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -27,14 +29,14 @@ public class MySQLDialect implements Dialect {
 
         List<ParameterMapping> parameterMappings = getFilteredParameterMappings(origin, select);
 
-        // Add 'COUNT(*)' as select item into root select.
+        // Add "COUNT(*)" as select item into root select.
         Function countFunc = new Function();
         countFunc.setName("COUNT");
         countFunc.setAllColumns(true);
         List<SelectItem> selectItems = Collections.singletonList(new SelectExpressionItem(countFunc));
         select.setSelectItems(selectItems);
 
-        // Removes statements 'ORDER BY', 'LIMIT', 'OFFSET'.
+        // Removes statements "ORDER BY", "LIMIT", "OFFSET".
         select.setOrderByElements(null);
         select.setLimit(null);
         select.setOffset(null);
@@ -59,55 +61,39 @@ public class MySQLDialect implements Dialect {
     }
 
     private static List<ParameterMapping> getFilteredParameterMappings(BoundSql boundSql, PlainSelect select) {
-        ParameterMapping[] mappings = boundSql.getParameterMappings().toArray(new ParameterMapping[0]);
+        List<ParameterMapping> mappings = new ArrayList<>(boundSql.getParameterMappings());
 
-        // Removes parameter mappings in select statement.
-        int selelctOccurrences = 0;
-        for (SelectItem selectItem : select.getSelectItems()) {
-            selelctOccurrences += StringUtils.countOccurrencesOf(selectItem.toString(), "?");
+        // Indexes of parameter mappings in "SELECT" statement.
+        List<Integer> indexes = IntStream.range(0, select.getSelectItems().stream().map(Object::toString)
+                .mapToInt(it -> StringUtils.countOccurrencesOf(it, MAPPED_PARAMETER_CHARACTER)).sum())
+                .boxed().collect(toList());
+
+        int count = 0;
+
+        Offset offset = select.getOffset();
+        if (offset != null) {
+            count += StringUtils.countOccurrencesOf(offset.toString(), MAPPED_PARAMETER_CHARACTER);
         }
-        for (int i = 0; i < selelctOccurrences; i++) {
-            mappings[i] = null;
+
+        Limit limit = select.getLimit();
+        if (limit != null) {
+            count += StringUtils.countOccurrencesOf(limit.toString(), MAPPED_PARAMETER_CHARACTER);
         }
 
-        int otherOccurrences = 0;
-
-        // Removes parameter mappings in offset statement.
-        if (select.getOffset() != null) {
-            int lastIndex = (mappings.length - 1) - otherOccurrences;
-            int occurrences = StringUtils.countOccurrencesOf(select.getLimit().toString(), "?");
-            otherOccurrences += occurrences;
-
-            for (int i = lastIndex; i > lastIndex - occurrences && i >= selelctOccurrences; i--) {
-                mappings[i] = null;
+        List<OrderByElement> orderBy = select.getOrderByElements();
+        if (!CollectionUtils.isEmpty(orderBy)) {
+            for (OrderByElement order : orderBy) {
+                count += StringUtils.countOccurrencesOf(order.toString(), MAPPED_PARAMETER_CHARACTER);
             }
         }
 
-        // Removes parameter mappings in limit statement.
-        if (select.getLimit() != null) {
-            int lastIndex = (mappings.length - 1) - otherOccurrences;
-            int occurrences = StringUtils.countOccurrencesOf(select.getLimit().toString(), "?");
-            otherOccurrences += occurrences;
+        // Adds indexes of parameter mappings in "OFFSET", "LIMIT", "ORDER BY" statements.
+        int lastIndex = mappings.size() - 1;
+        indexes.addAll(IntStream.range(lastIndex - count, lastIndex).boxed().collect(toList()));
 
-            for (int i = lastIndex; i > lastIndex - occurrences && i >= selelctOccurrences; i--) {
-                mappings[i] = null;
-            }
-        }
-
-        // Removes parameter mappings in order-by statement.
-        if (select.getOrderByElements() != null && !select.getOrderByElements().isEmpty()) {
-            int lastIndex = (mappings.length - 1) - otherOccurrences;
-            int occurrences = 0;
-            for (OrderByElement orderByElement : select.getOrderByElements()) {
-                occurrences += StringUtils.countOccurrencesOf(orderByElement.toString(), "?");
-            }
-
-            for (int i = lastIndex; i > lastIndex - occurrences && i >= selelctOccurrences; i--) {
-                mappings[i] = null;
-            }
-        }
-
-        return Arrays.stream(mappings).filter(Objects::nonNull).collect(toList());
+        // Removes parameter mappings in that statements.
+        indexes.forEach(i -> mappings.set(i, null));
+        return mappings.stream().filter(Objects::nonNull).collect(toList());
     }
 
 }
