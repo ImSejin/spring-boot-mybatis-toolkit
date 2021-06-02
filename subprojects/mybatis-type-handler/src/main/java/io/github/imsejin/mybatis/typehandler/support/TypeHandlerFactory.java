@@ -18,10 +18,13 @@ public class TypeHandlerFactory {
     private TypeHandlerFactory() {
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> BaseTypeHandler<T> create(Class<T> type, Function<T, String> input, Function<String, T> output) {
-        ClassLoader classLoader = TypeHandlerFactory.class.getClassLoader();
+        return create(type, input, output, Thread.currentThread().getContextClassLoader());
+    }
 
+    @SuppressWarnings("unchecked")
+    public static <T> BaseTypeHandler<T> create(Class<T> type, Function<T, String> input, Function<String, T> output,
+                                                ClassLoader classLoader) {
         // Creates BaseTypeHandler<T> as a type.
         TypeDescription.Generic baseTypeHandler = TypeDescription.Generic.Builder
                 .parameterizedType(BaseTypeHandler.class, type).build();
