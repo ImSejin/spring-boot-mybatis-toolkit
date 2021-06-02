@@ -76,16 +76,34 @@ public class DynamicCodeEnumTypeHandlerGenerator {
 
     private final Reflections reflections;
 
+    private final ClassLoader classLoader;
+
     public DynamicCodeEnumTypeHandlerGenerator(Class<?> basePackageClass) {
-        this(basePackageClass.getPackage().getName());
+        this(basePackageClass.getPackage().getName(), Thread.currentThread().getContextClassLoader());
+    }
+
+    public DynamicCodeEnumTypeHandlerGenerator(Class<?> basePackageClass, ClassLoader classLoader) {
+        this(basePackageClass.getPackage().getName(), classLoader);
     }
 
     public DynamicCodeEnumTypeHandlerGenerator(String basePackage) {
-        this(new Reflections(Objects.requireNonNull(basePackage, "Base package is not allowed to be null")));
+        this(new Reflections(Objects.requireNonNull(basePackage, "Base package is not allowed to be null")),
+                Thread.currentThread().getContextClassLoader());
+    }
+
+    public DynamicCodeEnumTypeHandlerGenerator(String basePackage, ClassLoader classLoader) {
+        this(new Reflections(Objects.requireNonNull(basePackage, "Base package is not allowed to be null")),
+                classLoader);
     }
 
     public DynamicCodeEnumTypeHandlerGenerator(Reflections reflections) {
         this.reflections = Objects.requireNonNull(reflections, "Reflections is not allowed to be null");
+        this.classLoader = Thread.currentThread().getContextClassLoader();
+    }
+
+    public DynamicCodeEnumTypeHandlerGenerator(Reflections reflections, ClassLoader classLoader) {
+        this.reflections = Objects.requireNonNull(reflections, "Reflections is not allowed to be null");
+        this.classLoader = Objects.requireNonNull(classLoader, "ClassLoader is not allowed to be null");
     }
 
     /**
@@ -127,8 +145,6 @@ public class DynamicCodeEnumTypeHandlerGenerator {
         Class<CodeEnumTypeHandler> superType = CodeEnumTypeHandler.class;
         Constructor<CodeEnumTypeHandler> superConstructor = superType.getConstructor(Class.class);
 
-        ClassLoader classLoader = getClass().getClassLoader();
-
         List<Class<T>> classList = Arrays.asList(classes);
         Map<Class<?>, TypeHandler<?>> typeHandlerMap = new HashMap<>();
         for (Class<? extends CodeEnum> type : subclasses) {
@@ -145,7 +161,7 @@ public class DynamicCodeEnumTypeHandlerGenerator {
             // 'CodeEnumTypeHandler'를 상속하는 동적 타입을 생성한다.
             Class<? extends CodeEnumTypeHandler> dynamicType = new ByteBuddy().subclass(superType)
                     .defineConstructor(Visibility.PUBLIC).intercept(MethodCall.invoke(superConstructor).with(type))
-                    .make().load(classLoader).getLoaded();
+                    .make().load(this.classLoader).getLoaded();
 
             // 기본 생성자로 동적 타입의 인스턴스를 생성한다.
             Constructor<? extends CodeEnumTypeHandler> constructor = dynamicType.getConstructor();
