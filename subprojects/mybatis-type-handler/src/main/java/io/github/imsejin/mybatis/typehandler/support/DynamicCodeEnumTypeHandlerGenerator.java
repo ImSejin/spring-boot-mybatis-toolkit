@@ -36,34 +36,34 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 
 /**
- * {@link CodeEnum}의 모든 구현체를 찾아, {@link CodeEnumTypeHandler}를 상속하는
- * 타입을 동적으로 생성 및 인스턴스화한다.
- *
- * <p> {@link CodeEnumTypeHandler}의 abstract 키워드를 제거하여 일반 생성자로 아래와 같이 생성하면
- * 등록이 되긴 하나, {@code SqlSessionFactoryBean.setTypeHandlers(TypeHandler[])}가
- * 각각의 핸들러 인스턴스를 등록하는 것이 아니다.
- *
- * <p> 내부적으로 핸들러 인스턴스의 타입을 판단하여 {@code SqlSessionFactoryBean} 내에서
- * 하나의 {@link TypeHandler}가 하나의 타입에만 적용되는 1:1 매핑 방식을 채용한다.
- * 따라서 아래와 같은 방식으로는 {@link CodeEnum}의 구현체를 오직 1개만 등록할 수 있다.
+ * Dynamic generator for subclasses of {@link CodeEnumTypeHandler}.
+ * <p>
+ * This finds all implementations of {@link CodeEnum} and
+ * dynamically generates and instantiates the types that extend {@link CodeEnumTypeHandler}.
+ * <p>
+ * If you remove {@code abstract} keyword on {@link CodeEnumTypeHandler} and instantiates,
+ * you can register. But it is not registration for each instance.
+ * <p>
+ * MyBatis internally determines the type of instance and adopts 1:1 mapping policy within
+ * {@code SqlSessionFactoryBean} in which one {@link TypeHandler} is mapped to one type.
+ * Therefore, only one implementation of {@link CodeEnum} can be registered using the following code.
  *
  * <pre><code>
- * Set<Class<? extends CodeEnum>> subclasses = reflections.getSubTypesOf(CodeEnum.class);
- * List<TypeHandler<?>> typeHandlers = new ArrayList<>();
+ * Set&lt;Class&lt;? extends CodeEnum>> subclasses = reflections.getSubTypesOf(CodeEnum.class);
+ * List&lt;TypeHandler&lt;?>> typeHandlers = new ArrayList<>();
  *
- * for (Class<? extends CodeEnum> type : subclasses) {
+ * for (Class&lt;? extends CodeEnum> type : subclasses) {
  *     typeHandlers.add(new CodeEnumTypeHandler(type));
  * }
  * </code></pre>
- *
- * <p> 익명 클래스를 이용하는 것을 시도해봤으나 익명 클래스는 지원이 안 되는 듯하다.
- * {@link ByteBuddy}를 이용하여 아래 코드처럼 동적으로 다수의 핸들러 타입을 정의하고
- * 인스턴스를 생성하여 등록한다.
+ * I've tried with anonymous classes, but they don't seem to be supported.
+ * Using {@link ByteBuddy}, this dynamically defines types of {@link CodeEnumTypeHandler} and
+ * instantiates like the following code.
  *
  * <pre><code>
- * public class DynamicTypeHandler extends CodeEnumTypeHandler<CodeEnum을_구현한_Enum> {
+ * public class DynamicTypeHandler extends CodeEnumTypeHandler&lt;CodeEnumImplEnum> {
  *     public DynamicTypeHandler() {
- *         super(CodeEnum을_구현한_Enum.class);
+ *         super(CodeEnumImplEnum.class);
  *     }
  * }
  * </code></pre>
