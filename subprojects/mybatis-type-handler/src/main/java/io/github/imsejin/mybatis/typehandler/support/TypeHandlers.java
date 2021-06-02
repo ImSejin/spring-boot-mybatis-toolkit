@@ -3,31 +3,51 @@ package io.github.imsejin.mybatis.typehandler.support;
 import net.jodah.typetools.TypeResolver;
 import org.apache.ibatis.type.TypeHandler;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * {@link Map} 그 자체를 bean으로 등록할 수 없기에
- * 핸들러 인스턴스들을 내부에 담아 값을 전달해 줄 컨테이너 객체를 만들었다.
+ * Easy builder for {@link TypeHandler}.
+ * <p>
+ * Spring IOC Container doesn't allowed to register {@link java.lang.reflect.Array},
+ * {@link java.util.Collection}, {@link Map}, etc as a bean. This class is created
+ * for being as a container of instances of {@link TypeHandler}.
  */
 public class TypeHandlers {
 
     private final Map<Class<?>, TypeHandler<?>> typeHandlerMap;
 
     private TypeHandlers(Map<Class<?>, TypeHandler<?>> typeHandlerMap) {
-        this.typeHandlerMap = typeHandlerMap;
+        this.typeHandlerMap = Collections.unmodifiableMap(typeHandlerMap);
     }
 
+    /**
+     * Returns unmodifiable map of {@link TypeHandler}.
+     *
+     * @return unmodifiable map of {@link TypeHandler}
+     */
     public Map<Class<?>, TypeHandler<?>> get() {
         return this.typeHandlerMap;
     }
 
+    /**
+     * Creates builder for this.
+     *
+     * @return builder
+     */
     public static TypeHandlerBuilder builder() {
-        return new TypeHandlerBuilder();
+        return new TypeHandlerBuilder(Thread.currentThread().getContextClassLoader());
     }
 
+    /**
+     * Creates builder for this.
+     *
+     * @param classLoader class loader to load dynamically
+     * @return builder
+     */
     public static TypeHandlerBuilder builder(ClassLoader classLoader) {
         return new TypeHandlerBuilder(classLoader);
     }
@@ -35,10 +55,6 @@ public class TypeHandlers {
     public static class TypeHandlerBuilder {
         private final Map<Class<?>, TypeHandler<?>> typeHandlerMap = new HashMap<>();
         private final ClassLoader classLoader;
-
-        private TypeHandlerBuilder() {
-            this.classLoader = Thread.currentThread().getContextClassLoader();
-        }
 
         private TypeHandlerBuilder(ClassLoader classLoader) {
             this.classLoader = Objects.requireNonNull(classLoader, "ClassLoader is not allowed to be null");
@@ -91,7 +107,7 @@ public class TypeHandlers {
          *         = new DynamicCodeEnumTypeHandlerGenerator(basePackage);
          *
          *     TypeHandlers typeHandlers = TypeHandlers.builder()
-         *             .add(generator.findTypeHandlers())
+         *             .add(generator.generateAll())
          *             .build();
          * </code></pre>
          *
@@ -103,6 +119,11 @@ public class TypeHandlers {
             return this;
         }
 
+        /**
+         * Returns a instance of {@link TypeHandlers}.
+         *
+         * @return instance of {@link TypeHandlers}
+         */
         public TypeHandlers build() {
             return new TypeHandlers(this.typeHandlerMap);
         }

@@ -13,6 +13,11 @@ import java.util.function.Function;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
+/**
+ * Easy maker for {@link org.apache.ibatis.type.TypeHandler}.
+ *
+ * @see TypeHandlers
+ */
 public class TypeHandlerFactory {
 
     private TypeHandlerFactory() {
