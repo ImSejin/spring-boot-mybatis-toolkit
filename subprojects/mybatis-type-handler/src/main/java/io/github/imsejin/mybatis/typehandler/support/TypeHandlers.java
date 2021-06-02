@@ -5,6 +5,7 @@ import org.apache.ibatis.type.TypeHandler;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -27,10 +28,20 @@ public class TypeHandlers {
         return new TypeHandlerBuilder();
     }
 
+    public static TypeHandlerBuilder builder(ClassLoader classLoader) {
+        return new TypeHandlerBuilder(classLoader);
+    }
+
     public static class TypeHandlerBuilder {
         private final Map<Class<?>, TypeHandler<?>> typeHandlerMap = new HashMap<>();
+        private final ClassLoader classLoader;
 
         private TypeHandlerBuilder() {
+            this.classLoader = Thread.currentThread().getContextClassLoader();
+        }
+
+        private TypeHandlerBuilder(ClassLoader classLoader) {
+            this.classLoader = Objects.requireNonNull(classLoader, "ClassLoader is not allowed to be null");
         }
 
         /**
@@ -67,7 +78,7 @@ public class TypeHandlers {
         @SuppressWarnings("unchecked")
         public <T> TypeHandlerBuilder add(Function<T, String> input, Function<String, T> output) {
             Class<T> type = (Class<T>) TypeResolver.resolveRawArguments(Function.class, input.getClass())[0];
-            this.typeHandlerMap.put(type, TypeHandlerFactory.create(type, input, output));
+            this.typeHandlerMap.put(type, TypeHandlerFactory.create(type, input, output, this.classLoader));
             return this;
         }
 
