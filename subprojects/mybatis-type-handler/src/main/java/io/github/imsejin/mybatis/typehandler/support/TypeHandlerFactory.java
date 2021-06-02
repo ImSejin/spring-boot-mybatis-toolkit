@@ -25,6 +25,8 @@ public class TypeHandlerFactory {
     @SuppressWarnings("unchecked")
     public static <T> BaseTypeHandler<T> create(Class<T> type, Function<T, String> input, Function<String, T> output,
                                                 ClassLoader classLoader) {
+        if (classLoader == null) throw new IllegalArgumentException("ClassLoader is not allowed to be null");
+
         // Creates BaseTypeHandler<T> as a type.
         TypeDescription.Generic baseTypeHandler = TypeDescription.Generic.Builder
                 .parameterizedType(BaseTypeHandler.class, type).build();
