@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * Easy builder for {@link TypeHandler}.
+ * Easy builder for {@link TypeHandler}
  * <p>
  * Spring IOC Container doesn't allowed to register {@link java.lang.reflect.Array},
  * {@link java.util.Collection}, {@link Map}, etc as a bean. This class is created

@@ -36,34 +36,33 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 
 /**
- * Dynamic generator for subclasses of {@link CodeEnumTypeHandler}.
+ * Dynamic generator for subclasses of {@link CodeEnumTypeHandler}
  * <p>
  * This finds all implementations of {@link CodeEnum} and
  * dynamically generates and instantiates the types that extend {@link CodeEnumTypeHandler}.
  * <p>
  * If you remove {@code abstract} keyword on {@link CodeEnumTypeHandler} and instantiates,
  * you can register. But it is not registration for each instance.
- * <p>
  * MyBatis internally determines the type of instance and adopts 1:1 mapping policy within
  * {@code SqlSessionFactoryBean} in which one {@link TypeHandler} is mapped to one type.
  * Therefore, only one implementation of {@link CodeEnum} can be registered using the following code.
  *
  * <pre><code>
  * Set&lt;Class&lt;? extends CodeEnum>> subclasses = reflections.getSubTypesOf(CodeEnum.class);
- * List&lt;TypeHandler&lt;?>> typeHandlers = new ArrayList<>();
- *
- * for (Class&lt;? extends CodeEnum> type : subclasses) {
- *     typeHandlers.add(new CodeEnumTypeHandler(type));
- * }
+ * List&lt;TypeHandler&lt;?>> typeHandlers = subclasses.stream()
+ *         .map(CodeEnumTypeHandler::new)
+ *         .collect(Collectors.toList());
  * </code></pre>
  * I've tried with anonymous classes, but they don't seem to be supported.
  * Using {@link ByteBuddy}, this dynamically defines types of {@link CodeEnumTypeHandler} and
  * instantiates like the following code.
  *
  * <pre><code>
- * public class DynamicTypeHandler extends CodeEnumTypeHandler&lt;CodeEnumImplEnum> {
+ * public enum CodeEnumImpl implementations CodeEnum { ... }
+ *
+ * public class DynamicTypeHandler extends CodeEnumTypeHandler&lt;CodeEnumImpl> {
  *     public DynamicTypeHandler() {
- *         super(CodeEnumImplEnum.class);
+ *         super(CodeEnumImpl.class);
  *     }
  * }
  * </code></pre>
