@@ -35,6 +35,12 @@ implementation group: "io.github.imsejin", name: "mybatis-pagination", version: 
 
 
 
+## Changelog
+
+[here](./CHANGELOG.md)
+
+
+
 ## Example
 
 ```java
