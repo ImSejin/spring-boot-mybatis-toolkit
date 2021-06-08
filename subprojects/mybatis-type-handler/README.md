@@ -35,6 +35,12 @@ implementation group: "io.github.imsejin", name: "mybatis-type-handler", version
 
 
 
+## Changelog
+
+[here](./CHANGELOG.md)
+
+
+
 ## Example
 
 ```java
