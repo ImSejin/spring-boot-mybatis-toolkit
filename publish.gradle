@@ -14,10 +14,14 @@ publishing {
     publications {
         // Creates a Maven publication called "mavenJava".
         mavenJava(MavenPublication) {
+            def githubUserId = "ImSejin"
+            def repositoryName = rootProject.name
+            def githubPath = "$githubUserId/$repositoryName"
+
             pom {
                 name = ""
                 description = ""
-                url = "https://github.com/ImSejin/spring-boot-mybatis-toolkit/tree/main/subprojects/$project.name"
+                url = "https://github.com/$githubPath/tree/main/subprojects/$project.name"
 
                 organization {
                     name = "io.github.imsejin"
@@ -26,21 +30,21 @@ publishing {
 
                 issueManagement {
                     system = "GitHub"
-                    url = "https://github.com/ImSejin/spring-boot-mybatis-toolkit/issues"
+                    url = "https://github.com/$githubPath/issues"
                 }
 
                 licenses {
                     license {
                         name = "MIT License"
-                        url = "https://github.com/ImSejin/spring-boot-mybatis-toolkit/blob/main/LICENSE"
+                        url = "https://github.com/$githubPath/blob/main/LICENSE"
                         distribution = "repo"
                     }
                 }
 
                 scm {
-                    url = "https://github.com/ImSejin/spring-boot-mybatis-toolkit"
-                    connection = "scm:git:git://github.com/ImSejin/spring-boot-mybatis-toolkit.git"
-                    developerConnection = "scm:git:ssh://git@github.com:ImSejin/spring-boot-mybatis-toolkit.git"
+                    url = "https://github.com/$githubPath"
+                    connection = "scm:git:git://github.com/" + githubPath + ".git"
+                    developerConnection = "scm:git:ssh://git@github.com:" + githubPath + ".git"
                 }
 
                 developers {
