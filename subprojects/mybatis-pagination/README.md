@@ -9,7 +9,7 @@
 
 <p align="center">
     <a href="https://lgtm.com/projects/g/ImSejin/spring-boot-mybatis-toolkit/context:java">
-        <img alt="Language grade: Java" src="https://img.shields.io/lgtm/grade/java/g/ImSejin/spring-boot-mybatis-toolkit.svg?logo=&logoWidth=&label=lgtm%3A%20code%20quality&&style=flat-square"/>
+        <img alt="Lgtm grade" src="https://img.shields.io/lgtm/grade/java/g/ImSejin/spring-boot-mybatis-toolkit.svg?logo=&logoWidth=&label=lgtm%3A%20code%20quality&&style=flat-square"/>
     </a>
     <a href="https://www.codacy.com/gh/ImSejin/spring-boot-mybatis-toolkit/dashboard">
         <img alt="Codacy grade" src="https://img.shields.io/codacy/grade/6bf43df6f96d4b63892d4acf13c4e0a4?label=codacy%3A%20code%20quality&style=flat-square">
