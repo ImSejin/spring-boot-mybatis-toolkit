@@ -14,7 +14,7 @@
     <a href="https://www.codacy.com/gh/ImSejin/spring-boot-mybatis-toolkit/dashboard">
         <img alt="Codacy grade" src="https://img.shields.io/codacy/grade/6bf43df6f96d4b63892d4acf13c4e0a4?label=codacy%3A%20code%20quality&style=flat-square">
     </a>
-    <a href="https://search.maven.org/artifact/io.github.imsejin/mybatis-pagination">
+    <a href="https://search.maven.org/artifact/io.github.imsejin/mybatis-type-handler">
         <img alt="Maven Central" src="https://img.shields.io/maven-central/v/io.github.imsejin/mybatis-type-handler?style=flat-square">
     </a>
     <img alt="jdk8" src="https://img.shields.io/badge/jdk-8-orange?style=flat-square">
