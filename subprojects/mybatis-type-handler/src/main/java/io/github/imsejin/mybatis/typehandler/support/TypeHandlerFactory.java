@@ -109,7 +109,7 @@ public class TypeHandlerFactory {
                  */
                 .method(named("getNullableResult").and(isAbstract())
                         .and(takesArguments(CallableStatement.class, int.class))
-                        .and(returns(void.class)))
+                        .and(returns(type)))
                 .intercept(InvocationHandlerAdapter.of((proxy, method, args) -> {
                     CallableStatement cs = (CallableStatement) args[0];
                     int columnIndex = (int) args[1];
