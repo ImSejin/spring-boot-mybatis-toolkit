@@ -1,10 +1,12 @@
 package io.github.imsejin.mybatis.example.core.web;
 
+import io.github.imsejin.mybatis.typehandler.support.CodeEnumConverterFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -34,6 +36,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         log.debug("WebMvcConfigurer registered {} handler method argument resolver(s): {}",
                 resolverTypes.size(), resolverTypes.stream().map(Class::getSimpleName).collect(toList()));
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverterFactory(new CodeEnumConverterFactory<>());
     }
 
 }

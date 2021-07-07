@@ -37,7 +37,7 @@ import static java.util.stream.Collectors.toList;
         basePackageClasses = Application.class,
         sqlSessionFactoryRef = "sqlSessionFactory"
 )
-public class DatabaseConfig {
+class DatabaseConfig {
 
     @Bean
     @Primary

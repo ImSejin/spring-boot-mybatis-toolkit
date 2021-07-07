@@ -22,17 +22,21 @@
  * SOFTWARE.
  */
 
-package io.github.imsejin.mybatis.example.core.web.resolver;
+package io.github.imsejin.mybatis.example.core.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.imsejin.mybatis.pagination.resolver.PageRequestResolverAdaptor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
-class PageRequestResolver extends PageRequestResolverAdaptor {
+@RequiredArgsConstructor
+class AppRunner implements ApplicationRunner {
 
-    PageRequestResolver(ObjectMapper objectMapper) {
-        super(objectMapper);
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
     }
 
 }
