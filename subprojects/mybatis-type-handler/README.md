@@ -28,7 +28,7 @@
 <dependency>
   <groupId>io.github.imsejin</groupId>
   <artifactId>mybatis-type-handler</artifactId>
-  <version>${mybatis.type-handler.version}</version>
+  <version>${mybatis-type-handler.version}</version>
 </dependency>
 ```
 
