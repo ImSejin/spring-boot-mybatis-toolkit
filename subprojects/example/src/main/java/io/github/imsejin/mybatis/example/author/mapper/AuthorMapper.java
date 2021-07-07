@@ -10,7 +10,7 @@ public interface AuthorMapper {
 
     @ResultMap("author")
     @Select("<script> " +
-            "SELECT * " +
+            "SELECT ID, NAME, COUNTRY, BIRTHDATE, UUID() AS UUID " +
             "FROM AUTHOR " +
             "WHERE 1 " +
 
@@ -46,6 +46,7 @@ public interface AuthorMapper {
             @Result(property = "name", column = "NAME"),
             @Result(property = "country", column = "COUNTRY"),
             @Result(property = "birthdate", column = "BIRTHDATE"),
+            @Result(property = "uuid", column = "UUID"),
     })
     @Select("SELECT * " +
             "FROM AUTHOR " +

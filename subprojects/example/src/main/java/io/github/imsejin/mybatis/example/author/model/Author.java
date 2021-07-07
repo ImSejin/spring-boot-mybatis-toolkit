@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -17,5 +18,6 @@ public class Author {
     private String name;
     private String country;
     private LocalDate birthdate;
+    private UUID uuid;
 
 }
