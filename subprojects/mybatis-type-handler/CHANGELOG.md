@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.2.0 (2021-07-xx)
+
+### Modification
+
+- 🚿 Clean up: constructors of `DynamicCodeEnumTypeHandlerGenerator`
+- ⚡️ Improve: performance of `CodeEnumTypeHandler` using cache
+- 📝 Update: javadoc
+
+### New features
+
+- ✨ Add: `CodeEnumConverterFactory` for conversion of `CodeEnum` from `String`
+
+### Dependencies
+
+- ⬆️ Upgrade: dependency `byte-buddy` from `1.11.1` to `1.11.6`
+- ⬆️ Upgrade: dependency `springframework` from `5.3.7` to `5.3.8`
+
+### Troubleshooting
+
+- 🐞 Fix: wrong return type for generation of dynamic type handler in `TypeHandlerFactory`
+
+
+
 ## 0.1.3 (2021-06-02)
 
 ### New features
