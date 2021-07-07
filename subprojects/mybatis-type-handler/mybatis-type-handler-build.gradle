@@ -1,13 +1,17 @@
 dependencies {
-    compileOnly(group: "org.mybatis", name: "mybatis", version: "$versions.mybatis")
-    compileOnly(group: "com.fasterxml.jackson.core", name: "jackson-databind", version: "$versions.jackson")
+    compileOnly(group: "org.mybatis", name: "mybatis", version: versions.mybatis)
+    compileOnly(group: "com.fasterxml.jackson.core", name: "jackson-databind", version: versions.jackson)
+    compileOnly(group: "org.springframework", name: "spring-web", version: versions.springframework) {
+        exclude(module: "spring-beans")
+        exclude(module: "spring-jcl")
+    }
 
     // Finder for types matched a specific condition.
-    api(group: "org.reflections", name: "reflections", version: "$versions.reflections")
+    api(group: "org.reflections", name: "reflections", version: versions.reflections)
     // Bytecode manipulator, dynamic type generator.
-    implementation(group: "net.bytebuddy", name: "byte-buddy", version: "$versions.bytebuddy")
+    implementation(group: "net.bytebuddy", name: "byte-buddy", version: versions.bytebuddy)
     // Finder for generic types.
-    implementation(group: "net.jodah", name: "typetools", version: "$versions.typetools")
+    implementation(group: "net.jodah", name: "typetools", version: versions.typetools)
 }
 
 version = "0.1.3"
