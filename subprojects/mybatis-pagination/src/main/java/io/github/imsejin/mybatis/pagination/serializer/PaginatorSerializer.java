@@ -10,7 +10,7 @@ import java.io.IOException;
 public class PaginatorSerializer extends StdSerializer<Paginator<?>> {
 
     /**
-     * Prevent {@code org.springframework.web.HttpMediaTypeNotAcceptableException} from occurring.
+     * Prevent {@link org.springframework.web.HttpMediaTypeNotAcceptableException} from occurring.
      */
     public PaginatorSerializer() {
         this(null);

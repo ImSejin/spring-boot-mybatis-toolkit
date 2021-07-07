@@ -30,6 +30,7 @@ public abstract class PageRequestResolverAdaptor implements HandlerMethodArgumen
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         Map<String, String> paramMap = new HashMap<>();
 
+        // Gets all request parameters.
         for (Iterator<String> iter = webRequest.getParameterNames(); iter.hasNext(); ) {
             String paramName = iter.next();
             String param = webRequest.getParameter(paramName);
@@ -37,10 +38,14 @@ public abstract class PageRequestResolverAdaptor implements HandlerMethodArgumen
             paramMap.put(paramName, param);
         }
 
+        // Separates parameter "PageRequest.QUERY_PROPERTY_NAME" from others.
         String query = paramMap.get(PageRequest.QUERY_PROPERTY_NAME);
         paramMap.remove(PageRequest.QUERY_PROPERTY_NAME);
+
+        // Converts "Map" instance to "PageRequest" instance.
         PageRequest pageRequest = objectMapper.convertValue(paramMap, PageRequest.class);
 
+        // Converts JSON format object to "Map" instance.
         if (StringUtils.hasText(query)) {
             Map<String, Object> queryMap = objectMapper.readValue(query, Map.class);
             pageRequest.setQuery(queryMap);

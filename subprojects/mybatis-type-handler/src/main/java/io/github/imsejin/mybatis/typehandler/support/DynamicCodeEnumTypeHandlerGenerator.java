@@ -155,7 +155,7 @@ public class DynamicCodeEnumTypeHandlerGenerator {
             if (policy == Policy.INCLUDE && !classList.contains(type)) continue;
             else if (policy == Policy.EXCLUDE && classList.contains(type)) continue;
 
-            // 'CodeEnumTypeHandler'를 상속하는 동적 타입을 생성한다.
+            // "CodeEnumTypeHandler"를 상속하는 동적 타입을 생성한다.
             Class<? extends CodeEnumTypeHandler> dynamicType = new ByteBuddy().subclass(superType)
                     .defineConstructor(Visibility.PUBLIC).intercept(MethodCall.invoke(superConstructor).with(type))
                     .make().load(this.classLoader).getLoaded();

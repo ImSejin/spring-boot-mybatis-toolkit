@@ -34,7 +34,7 @@ import java.util.Properties;
  * These are that conditions.
  *
  * <ol>
- *     <li>Return type is {@link Paginator}?</li>
+ *     <li>Is return type {@link Paginator}?</li>
  *     <li>Is {@link Pageable} type or its implementation type in the parameters?</li>
  * </ol>
  * Only these defined methods will be affected by this interceptor.
@@ -55,8 +55,8 @@ import java.util.Properties;
  *     </li>
  *     <li>
  *         <h3>Don't need to use the keyword "OFFSET" or "LIMIT" at root query</h3>
- *         You don't have to insert the keyword because this interceptor will
- *         automatically insert the keyword and process the pagination.
+ *         You don't have to insert them because this interceptor will
+ *         automatically insert and process the pagination.
  *     </li>
  * </ol>
  *
