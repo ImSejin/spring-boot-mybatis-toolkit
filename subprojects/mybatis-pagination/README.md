@@ -28,7 +28,7 @@
 <dependency>
   <groupId>io.github.imsejin</groupId>
   <artifactId>mybatis-pagination</artifactId>
-  <version>${mybatis.pagination.version}</version>
+  <version>${mybatis-pagination.version}</version>
 </dependency>
 ```
 
