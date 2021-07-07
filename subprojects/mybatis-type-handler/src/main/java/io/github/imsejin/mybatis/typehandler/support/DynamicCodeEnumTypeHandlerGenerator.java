@@ -78,7 +78,7 @@ public class DynamicCodeEnumTypeHandlerGenerator {
     private final ClassLoader classLoader;
 
     public DynamicCodeEnumTypeHandlerGenerator(Class<?> basePackageClass) {
-        this(basePackageClass.getPackage().getName(), Thread.currentThread().getContextClassLoader());
+        this(basePackageClass.getPackage().getName());
     }
 
     public DynamicCodeEnumTypeHandlerGenerator(Class<?> basePackageClass, ClassLoader classLoader) {
@@ -86,8 +86,7 @@ public class DynamicCodeEnumTypeHandlerGenerator {
     }
 
     public DynamicCodeEnumTypeHandlerGenerator(String basePackage) {
-        this(new Reflections(Objects.requireNonNull(basePackage, "Base package is not allowed to be null")),
-                Thread.currentThread().getContextClassLoader());
+        this(new Reflections(Objects.requireNonNull(basePackage, "Base package is not allowed to be null")));
     }
 
     public DynamicCodeEnumTypeHandlerGenerator(String basePackage, ClassLoader classLoader) {
@@ -96,8 +95,7 @@ public class DynamicCodeEnumTypeHandlerGenerator {
     }
 
     public DynamicCodeEnumTypeHandlerGenerator(Reflections reflections) {
-        this.reflections = Objects.requireNonNull(reflections, "Reflections is not allowed to be null");
-        this.classLoader = Thread.currentThread().getContextClassLoader();
+        this(reflections, Thread.currentThread().getContextClassLoader());
     }
 
     public DynamicCodeEnumTypeHandlerGenerator(Reflections reflections, ClassLoader classLoader) {
