@@ -12,6 +12,7 @@ buildscript {
                 mybatis        : "3.5.7",
                 springframework: "5.3.8",
                 junit5         : "5.7.2",
+                assertj        : "3.20.2",
         ]
     }
 
@@ -60,8 +61,10 @@ configure(subprojects) { it ->
     }
 
     dependencies {
-        testImplementation "org.junit.jupiter:junit-jupiter-api:$versions.junit5"
-        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$versions.junit5"
+        testImplementation(group: "org.junit.jupiter", name: "junit-jupiter-api", version: versions.junit5)
+        testRuntimeOnly(group: "org.junit.jupiter", name: "junit-jupiter-engine", version: versions.junit5)
+        testImplementation(group: "org.junit.jupiter", name: "junit-jupiter-params", version: versions.junit5)
+        testImplementation(group: "org.assertj", name: "assertj-core", version: versions.assertj)
     }
 
     test {
