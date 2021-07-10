@@ -8,8 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 /**
- * Request parameter, Response result, Mapper에
- * 사용하기 위해 Enum이 구현해야 할 인터페이스.
+ * Interface for enum used as code.
  */
 public interface CodeEnum {
 
