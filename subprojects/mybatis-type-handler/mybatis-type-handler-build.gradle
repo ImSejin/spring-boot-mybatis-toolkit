@@ -14,7 +14,7 @@ dependencies {
     implementation(group: "net.jodah", name: "typetools", version: versions.typetools)
 }
 
-version = "0.1.3"
+version = "0.2.0"
 
 // Override base publish script.
 apply(from: "$rootDir/publish.gradle")
