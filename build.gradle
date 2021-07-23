@@ -10,7 +10,7 @@ buildscript {
                 jsqlparser     : "4.0",
                 jackson        : "2.12.3",
                 mybatis        : "3.5.7",
-                springframework: "5.3.8",
+                springframework: "5.3.9",
                 junit5         : "5.7.2",
                 assertj        : "3.20.2",
         ]
