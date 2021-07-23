@@ -20,7 +20,7 @@ dependencies {
     annotationProcessor(group: "org.projectlombok", name: "lombok", version: versions.lombok)
 }
 
-version = "0.1.1"
+version = "0.1.2"
 
 // Override base publish script.
 apply(from: "$rootDir/publish.gradle")
