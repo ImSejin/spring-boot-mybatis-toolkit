@@ -1,6 +1,6 @@
 INSERT INTO AUTHOR (`NAME`, COUNTRY, BIRTHDATE)
 VALUES ('Aliko Dangote', 'Colombia', '1963-10-31'),
-       ('Bill Gates', 'United States America', '1955-12-03'),
+       ('Bill Gates', 'United States America', '1955-10-28'),
        ('Reifival Canni', 'Barbados', '1877-01-11'),
        ('Yihnoh Shuneim', 'Belarus', '2016-08-08'),
        ('Koreze Grizzlysnow', 'Belgium', '1632-01-21'),
