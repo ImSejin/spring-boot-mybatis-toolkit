@@ -5,7 +5,7 @@ buildscript {
         versions = [
                 lombok         : "1.18.20",
                 reflections    : "0.9.12",
-                bytebuddy      : "1.11.6",
+                bytebuddy      : "1.11.8",
                 typetools      : "0.6.3",
                 jsqlparser     : "4.0",
                 jackson        : "2.12.3",
