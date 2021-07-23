@@ -110,7 +110,7 @@ public class BoundSqlRebuilder implements Rebuilder<BoundSql> {
     private Map<String, Object> getAdditionalParameters() {
         Map<String, Object> additionalParameters = new HashMap<>();
 
-        for (ParameterMapping parameterMapping : this.boundSql.getParameterMappings()) {
+        for (ParameterMapping parameterMapping : this.parameterMappings) {
             String property = parameterMapping.getProperty();
             if (!this.boundSql.hasAdditionalParameter(property)) continue;
 
@@ -121,4 +121,3 @@ public class BoundSqlRebuilder implements Rebuilder<BoundSql> {
     }
 
 }
-
