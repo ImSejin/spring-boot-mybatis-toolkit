@@ -86,9 +86,25 @@ public class BoundSqlRebuilder implements Rebuilder<BoundSql> {
 
                         param.forEach(this.boundSql::setAdditionalParameter);
 
+                        // Replaces non-additional ParameterMapping
+                        // with new one that has property with "query." removed.
+                        String prefix = PageRequest.QUERY_PROPERTY_NAME + '.';
+                        for (int i = 0; i < this.parameterMappings.size(); i++) {
+                            ParameterMapping mapping = this.parameterMappings.get(i);
+                            if (!mapping.getProperty().startsWith(prefix)) continue;
+
+                            String newProperty = mapping.getProperty().substring(prefix.length());
+                            ParameterMapping newMapping = new ParameterMapping.Builder(
+                                    this.config, newProperty, mapping.getJavaType())
+                                    .mode(mapping.getMode()).build();
+
+                            this.parameterMappings.set(i, newMapping);
+                        }
+
                         // Substitutes a merged map for parameter object.
                         return param;
                     }
+
                     break;
 
                 case MULTIPLE:
