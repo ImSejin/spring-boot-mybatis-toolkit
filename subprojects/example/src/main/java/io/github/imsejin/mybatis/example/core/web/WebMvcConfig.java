@@ -1,41 +1,41 @@
 package io.github.imsejin.mybatis.example.core.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.imsejin.mybatis.pagination.resolver.PageRequestResolver;
 import io.github.imsejin.mybatis.typehandler.support.CodeEnumConverterFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.reflections.Reflections;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.lang.reflect.Modifier;
 import java.util.List;
-import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    private final Reflections reflections;
-
     private final ApplicationContext context;
+
+    @Bean
+    @Primary
+    PageRequestResolver pageRequestResolver(ObjectMapper objectMapper) {
+        return new PageRequestResolver(objectMapper);
+    }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        Set<Class<? extends HandlerMethodArgumentResolver>> resolverTypes = reflections
-                .getSubTypesOf(HandlerMethodArgumentResolver.class).stream()
-                .filter(it -> !Modifier.isAbstract(it.getModifiers())).collect(toSet());
-
-        resolverTypes.stream().map(context::getBean).forEach(resolvers::add);
+        resolvers.addAll(context.getBeansOfType(HandlerMethodArgumentResolver.class).values());
 
         log.debug("WebMvcConfigurer registered {} handler method argument resolver(s): {}",
-                resolverTypes.size(), resolverTypes.stream().map(Class::getSimpleName).collect(toList()));
+                resolvers.size(), resolvers.stream().map(it -> it.getClass().getSimpleName()).collect(toList()));
     }
 
     @Override
