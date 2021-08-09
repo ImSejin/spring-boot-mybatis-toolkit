@@ -1,23 +1,20 @@
 package io.github.imsejin.mybatis.example;
 
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-public class Application extends SpringBootServletInitializer {
+public class Application implements ApplicationRunner {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
 
-    /**
-     * For build as war.
-     */
     @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-        return builder.sources(getClass());
+    public void run(ApplicationArguments args) throws Exception {
+
     }
 
 }

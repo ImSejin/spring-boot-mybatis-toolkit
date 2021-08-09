@@ -20,7 +20,7 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class WebMvcConfig implements WebMvcConfigurer {
+class WebMvcConfig implements WebMvcConfigurer {
 
     private final ApplicationContext context;
 
