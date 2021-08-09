@@ -42,6 +42,7 @@ public enum Status implements CodeEnum {
             .collect(collectingAndThen(toMap(it -> it.code, it -> it), Collections::unmodifiableMap));
 
     private final String code;
+
     private final String codeName;
 
     public static boolean contains(String code) {
