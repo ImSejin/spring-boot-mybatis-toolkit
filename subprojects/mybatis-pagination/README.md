@@ -81,29 +81,21 @@ public class DatabaseConfig {
 ```
 
 ```java
-@Component
-public class PageRequestResolver extends PageRequestResolverAdaptor {
-
-    public PageRequestResolver(ObjectMapper objectMapper) {
-        super(objectMapper);
-    }
-
-}
-
 @Configuration
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    private final Reflections reflections;
     private final ApplicationContext context;
+
+    @Bean
+    @Primary
+    PageRequestResolver pageRequestResolver(ObjectMapper objectMapper) {
+        return new PageRequestResolver(objectMapper);
+    }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        Set<Class<? extends HandlerMethodArgumentResolver>> resolverTypes = reflections
-                .getSubTypesOf(HandlerMethodArgumentResolver.class).stream()
-                .filter(it -> !Modifier.isAbstract(it.getModifiers())).collect(toSet()); // Excludes adaptor classes.
-
-        resolverTypes.stream().map(context::getBean).forEach(resolvers::add);
+        resolvers.addAll(context.getBeansOfType(HandlerMethodArgumentResolver.class).values());
     }
 
 }
