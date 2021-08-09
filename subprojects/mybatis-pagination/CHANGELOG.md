@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.1.3 (202x-xx-xx)
+
+### Modification
+
+- 🚚 Rename: resolver from `PageRequestResolverAdaptor` to `PageRequestResolver`
+
+### New features
+
+- ✨ Add: default constructor of `PageRequestResolver`
+
+### Dependencies
+
+- ⬆️ Upgrade: dependency `byte-buddy` from `1.11.8` to `1.11.12`
+
+
+
 ## 0.1.2 (2021-07-24)
 
 ### Dependencies
