@@ -48,12 +48,10 @@ public class CodeEnumConverterFactory<E extends Enum<E> & CodeEnum> implements C
         private final Map<String, E> cache;
 
         private StringToEnumConverter(Class<E> enumType) {
-            E[] enumConstants = enumType.getEnumConstants();
-
             // Creates a cache for fast lookup.
             // DON'T DO THIS USING STREAM AND LAMBDA EXPRESSION BECAUSE OF LambdaConversionException.
             Map<String, E> cache = new HashMap<>();
-            for (E codeEnum : enumConstants) {
+            for (E codeEnum : enumType.getEnumConstants()) {
                 cache.put(codeEnum.getCode(), codeEnum);
             }
 
