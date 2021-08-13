@@ -15,6 +15,8 @@ import java.util.Map;
 
 public class PageRequestResolver implements HandlerMethodArgumentResolver {
 
+    private static final Class<PageRequest> RESOLUTION_CLASS = PageRequest.class;
+
     private final ObjectMapper objectMapper;
 
     public PageRequestResolver() {
@@ -27,7 +29,7 @@ public class PageRequestResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return PageRequest.class.isAssignableFrom(parameter.getParameterType());
+        return RESOLUTION_CLASS.isAssignableFrom(parameter.getParameterType());
     }
 
     @Override
@@ -49,7 +51,7 @@ public class PageRequestResolver implements HandlerMethodArgumentResolver {
         paramMap.remove(PageRequest.QUERY_PROPERTY_NAME);
 
         // Converts "Map" instance to "PageRequest" instance.
-        PageRequest pageRequest = objectMapper.convertValue(paramMap, PageRequest.class);
+        PageRequest pageRequest = objectMapper.convertValue(paramMap, RESOLUTION_CLASS);
 
         // Converts JSON format object to "Map" instance.
         if (StringUtils.hasText(query)) {
