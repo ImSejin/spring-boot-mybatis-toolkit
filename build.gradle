@@ -3,16 +3,18 @@ import java.nio.charset.StandardCharsets
 buildscript {
     ext {
         versions = [
-                lombok         : "1.18.20",
-                reflections    : "0.9.12",
-                bytebuddy      : "1.11.12",
-                typetools      : "0.6.3",
-                jsqlparser     : "4.0",
-                jackson        : "2.12.3",
-                mybatis        : "3.5.7",
-                springframework: "5.3.9",
-                junit5         : "5.7.2",
-                assertj        : "3.20.2",
+                lombok           : "1.18.20",
+                reflections      : "0.9.12",
+                bytebuddy        : "1.11.12",
+                typetools        : "0.6.3",
+                jsqlparser       : "4.0",
+                jackson          : "2.12.3",
+                mybatis          : "3.5.7",
+                mybatisSpringBoot: "2.2.0",
+                springframework  : "5.3.9",
+                springBoot       : "2.5.3",
+                junit5           : "5.7.2",
+                assertj          : "3.20.2",
         ]
     }
 

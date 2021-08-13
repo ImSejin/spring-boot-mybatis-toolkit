@@ -9,12 +9,9 @@ dependencies {
         // include(module: "spring-core")
         exclude(module: "spring-jcl")
     }
-    compileOnly(group: "org.springframework", name: 'spring-context', version: versions.springframework) {
-        exclude(module: "spring-aop")
-        exclude(module: "spring-beans")
-        exclude(module: "spring-core")
-        exclude(module: "spring-expression")
-    }
+
+    compileOnly(group: "org.springframework.boot", name: "spring-boot-starter-logging", version: versions.springBoot)
+    compileOnly(group: "org.mybatis.spring.boot", name: "mybatis-spring-boot-autoconfigure", version: versions.mybatisSpringBoot)
 
     compileOnly(group: "org.projectlombok", name: "lombok", version: versions.lombok)
     annotationProcessor(group: "org.projectlombok", name: "lombok", version: versions.lombok)
