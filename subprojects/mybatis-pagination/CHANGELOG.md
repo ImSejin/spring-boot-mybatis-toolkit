@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.3 (202x-xx-xx)
+## 0.2.0 (2021-08-13)
 
 ### Modification
 
@@ -8,9 +8,15 @@
 
 ### New features
 
+- ✨ Add: auto configuration using application properties `mybatis.configuration.plugins.pagination`
+
 - ✨ Add: default constructor of `PageRequestResolver`
 
 ### Dependencies
+
+- ➕ Add: dependency `spring-boot-starter-logging:2.5.3`
+
+- ➕ Add: dependency `mybatis-spring-boot-autoconfigure:2.2.0`
 
 - ⬆️ Upgrade: dependency `byte-buddy` from `1.11.8` to `1.11.12`
 
