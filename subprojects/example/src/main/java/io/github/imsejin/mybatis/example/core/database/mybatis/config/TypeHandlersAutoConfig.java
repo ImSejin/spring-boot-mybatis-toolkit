@@ -16,13 +16,13 @@ class TypeHandlersAutoConfig {
 
     @Bean
     @Primary
-    Reflections reflections() {
+    static Reflections reflections() {
         return new Reflections(Application.class);
     }
 
     @Bean
     @Primary
-    TypeHandlers typeHandlers(Reflections reflections) throws ReflectiveOperationException {
+    static TypeHandlers typeHandlers(Reflections reflections) throws ReflectiveOperationException {
         DynamicCodeEnumTypeHandlerGenerator generator = new DynamicCodeEnumTypeHandlerGenerator(reflections);
 
         return TypeHandlers.builder()

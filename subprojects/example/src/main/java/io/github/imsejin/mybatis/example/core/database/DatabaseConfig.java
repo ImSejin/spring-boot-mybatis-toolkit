@@ -42,13 +42,13 @@ class DatabaseConfig {
     @Bean
     @Primary
     @ConfigurationProperties("spring.datasource.hikari")
-    DataSource dataSource() {
+    static DataSource dataSource() {
         return DataSourceBuilder.create().type(HikariDataSource.class).build();
     }
 
     @Primary
     @Bean("sqlSessionFactory")
-    SqlSessionFactory sqlSessionFactory(DataSource dataSource, TypeHandlers typeHandlers) throws Exception {
+    static SqlSessionFactory sqlSessionFactory(DataSource dataSource, TypeHandlers typeHandlers) throws Exception {
         SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
 
         /*
