@@ -34,6 +34,14 @@ spring:
   profiles:
     active: local
 
+mybatis:
+  configuration:
+    plugins:
+      pagination:
+        dialect-class: "io.github.imsejin.mybatis.pagination.dialect.MySQLDialect"
+        auto-configure:
+          enabled: true
+
 # Actuator
 management:
   endpoints:

@@ -68,12 +68,16 @@ class DatabaseConfig {
                 typeHandlerMap.keySet().stream().map(Class::getSimpleName).collect(toList()));
 
         // Registers interceptors.
+//         registerInterceptor(factoryBean);
+
+        return factoryBean.getObject();
+    }
+
+    private static void registerInterceptor(SqlSessionFactoryBean factoryBean) {
         List<Interceptor> interceptors = Arrays.asList(new PaginationInterceptor(new MySQLDialect()));
         factoryBean.setPlugins(interceptors.toArray(new Interceptor[0]));
         log.debug("SqlSessionFactory registered {} interceptor(s): {}", interceptors.size(),
                 interceptors.stream().map(it -> it.getClass().getSimpleName()).collect(toList()));
-
-        return factoryBean.getObject();
     }
 
 }

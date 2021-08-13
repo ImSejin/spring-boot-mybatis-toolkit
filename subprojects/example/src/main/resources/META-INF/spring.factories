@@ -1,0 +1,3 @@
+# NOT IN SAMPLE, THIS FILE ISN'T NEEDED.
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  io.github.imsejin.mybatis.pagination.autoconfigure.MybatisPaginationAutoConfiguration
