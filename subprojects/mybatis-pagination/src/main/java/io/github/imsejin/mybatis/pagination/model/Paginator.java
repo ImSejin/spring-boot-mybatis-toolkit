@@ -15,9 +15,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@link Executor#query(MappedStatement, Object, RowBounds, ResultHandler)}의
- * 리턴 값이 {@link List}이기에 'polymorphism'이 적용될 수 있게 {@link List}를
- * 구현해야 한다.
+ * Paginator for paginated query result.
+ * <p>
+ * Return type of {@link Executor#query(MappedStatement, Object, RowBounds, ResultHandler)}
+ * is {@link List}, so this must implement that type.
  *
  * @param <T> type
  */

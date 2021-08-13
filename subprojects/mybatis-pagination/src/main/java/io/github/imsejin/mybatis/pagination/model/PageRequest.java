@@ -7,6 +7,9 @@ import lombok.ToString;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Request model of pagination.
+ */
 @ToString
 public class PageRequest implements Pageable {
 

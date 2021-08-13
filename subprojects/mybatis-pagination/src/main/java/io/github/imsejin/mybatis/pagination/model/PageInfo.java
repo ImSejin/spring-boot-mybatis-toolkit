@@ -5,6 +5,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ * Information of pagination.
+ */
 @Getter
 @ToString
 @EqualsAndHashCode(callSuper = false)

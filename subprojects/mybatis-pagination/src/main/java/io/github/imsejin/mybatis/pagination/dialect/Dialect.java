@@ -6,8 +6,6 @@ import org.apache.ibatis.session.Configuration;
 
 public interface Dialect {
 
-    String PROPERTY_NAME = "dialect";
-
     String MAPPED_PARAMETER_CHARACTER = "?";
 
     /**
