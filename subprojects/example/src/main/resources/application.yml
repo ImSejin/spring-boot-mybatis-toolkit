@@ -41,6 +41,7 @@ mybatis:
     plugins:
       pagination:
         dialect-class: "io.github.imsejin.mybatis.pagination.dialect.MySQLDialect"
+#        dialect-class: "io.github.imsejin.mybatis.pagination.dialect.OracleDialect"
         auto-configure:
           enabled: true
 
