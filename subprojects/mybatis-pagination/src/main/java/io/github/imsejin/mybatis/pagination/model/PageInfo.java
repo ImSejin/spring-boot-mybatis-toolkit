@@ -42,6 +42,12 @@ public class PageInfo implements Pageable {
     @JsonIgnore
     private final int limit;
 
+    @JsonIgnore
+    private final int startRowNum;
+
+    @JsonIgnore
+    private final int endRowNum;
+
     public PageInfo(int totalItems, int page, int size) {
         if (page < 1) throw new IllegalArgumentException("PageInfo.page must be positive: " + page);
         if (size < 1) throw new IllegalArgumentException("PageInfo.size must be positive: " + size);
@@ -57,6 +63,9 @@ public class PageInfo implements Pageable {
 
         this.offset = Math.max(0, page - 1) * size;
         this.limit = size;
+
+        this.startRowNum = ((page - 1) * size) + 1;
+        this.endRowNum = page * size;
     }
 
     public PageInfo(int totalItems, Pageable pageable) {

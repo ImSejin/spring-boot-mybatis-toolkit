@@ -16,4 +16,18 @@ public interface Pageable {
      */
     int getLimit();
 
+    /**
+     * Returns start row number.
+     *
+     * @return start row number
+     */
+    int getStartRowNum();
+
+    /**
+     * Returns end row number.
+     *
+     * @return end row number
+     */
+    int getEndRowNum();
+
 }
