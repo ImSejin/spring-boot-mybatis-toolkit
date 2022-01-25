@@ -42,7 +42,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import java.util.List;
 
 /**
- * Auto configuration for plugin of MyBatis pagination.
+ * Auto-configuration for plugin of MyBatis pagination.
  */
 @org.springframework.context.annotation.Configuration
 @ConditionalOnBean(SqlSessionFactory.class)
